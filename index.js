@@ -1,6 +1,31 @@
 const express = require('express');
 const app = express();
 var fs = require('fs');
+var os = require('os');
+var ifaces = os.networkInterfaces();
+var ip;
+
+app.use('/questions', express.static('questions'))
+Object.keys(ifaces).forEach(function (ifname) {
+    var alias = 0;
+
+    ifaces[ifname].forEach(function (iface) {
+        if ('IPv4' !== iface.family || iface.internal !== false) {
+            // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+            return;
+        }
+
+        if (alias >= 1) {
+            // this single interface has multiple ipv4 addresses
+            console.log(ifname + ':' + alias, iface.address);
+        } else {
+            // this interface has only one ipv4 adress
+            console.log(ifname, iface.address);
+            ip = iface.address;
+        }
+        ++alias;
+    });
+});
 const MongoClient = require('mongodb').MongoClient;
 var bodyParser = require('body-parser');
 var cors = require('cors');
@@ -29,9 +54,6 @@ MongoClient.connect(url, function (err, client) {
     users = db.collection('users');
 });
 
-
-
-
 app.post('/login', (req, res) => {
     console.log(req.body);
     users.findOne({ contactNumber: req.body.contactNumber, password: req.body.password }, function (err, result) {
@@ -42,27 +64,8 @@ app.post('/login', (req, res) => {
         }
     });
 });
-
-
-app.post('/questionDetails', (req, res) => {
-    fs.readdir(path, function (err, items) {
-        for (var i = 0; i < items.length; i++) {
-            console.log(items[i]);
-            let data = items[i].split('_');
-            if (parseInt(data[0]) == req.body.quettionState+1) {
-                fs.readdir(path + items[i], function (err, images) {
-                    
-                    res.json({ imageList: images, answer: data[1], randomString: data[2] })
-                });
-            }
-        }
-    });
-});
-
-app.post('/register', (req, res) => {
-    console.log(req.body);
-    users
-    users.insertOne({ contactNumber: req.body.contactNumber, password: req.body.password }, function (err, result) {
+app.get('/questionState', (req, res) => {
+    users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
         if (err) {
             res.send({ err: "internal server error please try again later." })
         } else {
@@ -71,8 +74,68 @@ app.post('/register', (req, res) => {
     });
 });
 
+// app.get('/questions/:queNo/:image', (req, res) => {
+//     const dir = '.' + req.originalUrl;
+//     console.log(dir);
+//     fs.readdir(dir, function (err, data) {
+//         if (err) {
+//             return console.log(err);
+//         }
+//         console.log(dir + data);
+//         res.send(data);
+//     });
+// });
 
-app.get('/login', (req, res) => {
+
+app.post('/questionDetails', (req, res) => {
+    fs.readdir(path, function (err, items) {
+        for (var i = 0; i < items.length; i++) {
+            let data = items[i].split('_');
+            if (parseInt(data[0]) == req.body.quettionState + 1) {
+                let _path = path + items[i];
+                fs.readdir(path + items[i], function (err, images) {
+                    let _images = []
+                    for (var j = 0; j < images.length; j++) {
+                        _images.push('http://' + ip + ':3000' + _path.substr(1) + '/' + images[j])
+                    }
+                    res.json({ imageList: _images, answer: data[1], randomString: data[2] })
+                });
+            }
+        }
+    });
+});
+
+app.post('/generateTicket', (req, res) => {
+    // console.log(req.body.contactNumber);
+    users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
+        if (err) {
+
+        } else {
+            if (!result) {
+
+            } else {
+                console.log(result);
+            }
+        }
+    });
+    res.send({});
+});
+
+
+app.post('/register', (req, res) => {
+    console.log(req.body);
+    users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
+        users.insertOne({ contactNumber: req.body.contactNumber, password: req.body.password }, function (err, result) {
+            if (err) {
+                res.send({ err: "internal server error please try again later." })
+            } else {
+                res.send({ quettionState: result.quettionState, points: result.points });
+            }
+        });
+    });
+});
+
+app.get('/test', (req, res) => {
     res.send({ test: "its working check your code first....." });
 })
 user = {
@@ -91,8 +154,5 @@ drawDetails = {
     users: [{ number: "", tickets: [] }],
     result: [{ users: [], ranking: "" }]
 }
-
-
-
 
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
