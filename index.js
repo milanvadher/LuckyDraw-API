@@ -52,15 +52,20 @@ MongoClient.connect(url, function (err, client) {
 
     db = client.db(dbName);
     users = db.collection('users');
+    drawSlots = db.collection('drawSlots');
 });
 
 app.post('/login', (req, res) => {
     console.log(req.body);
     users.findOne({ contactNumber: req.body.contactNumber, password: req.body.password }, function (err, result) {
         if (err) {
-            res.send({ err: "internal server error please try again later." })
+            res.status(500).json({ err: "internal server error please try again later." })
         } else {
-            res.send({ quettionState: result.quettionState, points: result.points });
+            if (result) {
+                res.send({ quettionState: result.quettionState, points: result.points });
+            } else {
+                res.status(404).json({ err: "user not found" });
+            }
         }
     });
 });
@@ -69,7 +74,10 @@ app.get('/questionState', (req, res) => {
         if (err) {
             res.send({ err: "internal server error please try again later." })
         } else {
+            console.log(result);
+
             res.send({ quettionState: result.quettionState, points: result.points });
+
         }
     });
 });
@@ -105,16 +113,29 @@ app.post('/questionDetails', (req, res) => {
     });
 });
 
+app.post('/getDrawSlots', (req, res) => {
+    drawSlots.find({}).project({ date: 1,_id:0 }).toArray(function (err, result) {
+        if (err) {
+            res.send({ err: "internal server error please try again later." })
+        } else {
+            res.send({slots: result});
+        }
+    });
+});
 app.post('/generateTicket', (req, res) => {
     // console.log(req.body.contactNumber);
-    users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
+    // console.log(req.body.slot);
+    
+    users.findModify({ contactNumber: req.body.contactNumber }, function (err, result) {
         if (err) {
 
         } else {
             if (!result) {
-
+                console.log("result.contactNumber");
             } else {
-                console.log(result);
+                users.updateOne({ contactNumber: req.body.contactNumber },{}, function (err, result) {
+
+                });
             }
         }
     });
@@ -145,12 +166,12 @@ user = {
     quettionState: "",
     points: "",
     earnedTickets: [],
+    totalMappedTicket:'',
     ticketMapping: []
 }
 
 drawDetails = {
     date: "",
-    slot: "",
     users: [{ number: "", tickets: [] }],
     result: [{ users: [], ranking: "" }]
 }
