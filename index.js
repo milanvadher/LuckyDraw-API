@@ -62,22 +62,33 @@ app.post('/login', (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." })
         } else {
             if (result) {
-                res.send({ quettionState: result.quettionState, points: result.points });
+                res.send({ quettionState: result.quettionState, points: result.points, contactNumber: result.contactNumber, username: result.username });
             } else {
                 res.status(404).json({ err: "user not found" });
             }
         }
     });
 });
+
 app.get('/questionState', (req, res) => {
+    users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
+        if (err) {
+            res.send({ err: "internal server error please try again later." });
+        } else {
+            console.log(result);
+            res.send({ quettionState: result.quettionState, points: result.points });
+
+        }
+    });
+});
+
+app.post('/ticketDetails', (req, res) => {
     users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
         if (err) {
             res.send({ err: "internal server error please try again later." })
         } else {
             console.log(result);
-
-            res.send({ quettionState: result.quettionState, points: result.points });
-
+            res.send({ totalTickets:result });
         }
     });
 });
@@ -114,26 +125,26 @@ app.post('/questionDetails', (req, res) => {
 });
 
 app.post('/getDrawSlots', (req, res) => {
-    drawSlots.find({}).project({ date: 1,_id:0 }).toArray(function (err, result) {
+    drawSlots.find({}).project({ date: 1, _id: 0 }).toArray(function (err, result) {
         if (err) {
             res.send({ err: "internal server error please try again later." })
         } else {
-            res.send({slots: result});
+            res.send({ slots: result });
         }
     });
 });
 app.post('/generateTicket', (req, res) => {
     // console.log(req.body.contactNumber);
     // console.log(req.body.slot);
-    
-    users.findModify({ contactNumber: req.body.contactNumber }, function (err, result) {
+    // console.log(req.body.ticketNumber);
+    users.findModify({ contactNumber: req.body.contactNumber, password: req.body.password }, function (err, result) {
         if (err) {
 
         } else {
             if (!result) {
                 console.log("result.contactNumber");
             } else {
-                users.updateOne({ contactNumber: req.body.contactNumber },{}, function (err, result) {
+                users.updateOne({ contactNumber: req.body.contactNumber }, {}, function (err, result) {
 
                 });
             }
@@ -166,7 +177,7 @@ user = {
     quettionState: "",
     points: "",
     earnedTickets: [],
-    totalMappedTicket:'',
+    totalMappedTicket: '',
     ticketMapping: []
 }
 
