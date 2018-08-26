@@ -46,7 +46,7 @@ fs.readdir(path, function (err, items) {
 const url = 'mongodb://localhost:27017';
 const dbName = 'LuckyDraw';
 var db;
-MongoClient.connect(url, function (err, client) {
+MongoClient.connect(url, { useNewUrlParser: true }, function (err, client) {
     // assert.equal(null, err);
     console.log("Connected successfully to server");
 
@@ -187,4 +187,11 @@ drawDetails = {
     result: [{ users: [], ranking: "" }]
 }
 
+<<<<<<< HEAD
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
+=======
+
+
+
+app.listen(3001, () => console.log('Example app listening on port 3000!'))
+>>>>>>> c0977bbeec0f0a38e6e6328563b6c1dbf4407b99
