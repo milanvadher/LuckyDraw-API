@@ -115,7 +115,7 @@ app.post('/questionDetails', (req, res) => {
                 fs.readdir(path + items[i], function (err, images) {
                     let _images = []
                     for (var j = 0; j < images.length; j++) {
-                        _images.push('http://' + ip + ':3000' + _path.substr(1) + '/' + images[j])
+                        _images.push('http://api.excellar.io:3000' + _path.substr(1) + '/' + images[j])
                     }
                     res.json({ imageList: _images, answer: data[1], randomString: data[2] })
                 });
@@ -187,11 +187,7 @@ drawDetails = {
     result: [{ users: [], ranking: "" }]
 }
 
-<<<<<<< HEAD
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
-=======
 
 
 
-app.listen(3001, () => console.log('Example app listening on port 3000!'))
->>>>>>> c0977bbeec0f0a38e6e6328563b6c1dbf4407b99
