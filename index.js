@@ -62,7 +62,7 @@ app.post('/login', (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." })
         } else {
             if (result) {
-                res.send({ quettionState: result.quettionState, points: result.points, contactNumber: result.contactNumber, username: result.username });
+                res.send({ questionState: result.questionState, points: result.points, contactNumber: result.contactNumber, username: result.username });
             } else {
                 res.status(404).json({ err: "user not found" });
             }
@@ -76,7 +76,7 @@ app.get('/questionState', (req, res) => {
             res.send({ err: "internal server error please try again later." });
         } else {
             console.log(result);
-            res.send({ quettionState: result.quettionState, points: result.points });
+            res.send({ questionState: result.questionState, points: result.points });
 
         }
     });
@@ -88,34 +88,63 @@ app.post('/ticketDetails', (req, res) => {
             res.send({ err: "internal server error please try again later." })
         } else {
             console.log(result);
-            res.send({ totalTickets:result });
+            res.send({ totalTickets: result });
         }
     });
 });
 
-// app.get('/questions/:queNo/:image', (req, res) => {
-//     const dir = '.' + req.originalUrl;
-//     console.log(dir);
-//     fs.readdir(dir, function (err, data) {
-//         if (err) {
-//             return console.log(err);
-//         }
-//         console.log(dir + data);
-//         res.send(data);
-//     });
-// });
+app.post('/saveUserData', (req, res) => {
+    users.findOne({ contactNumber: req.body.mobileNo }, function (err, result) {
+        if (err) {
+            res.send({ err: "internal server error please try again later." });
+        } else {
+            result.questionState = req.body.questionState;
+            result.points = req.body.points;
+            users.update({ contactNumber: req.body.mobileNo }, result, function (err, _result) {
+                res.send(
+                    (err === null) ? { questionState: result.questionState, points: result.points, contactNumber: result.contactNumber, username: result.username } : { msg: err }
+                );
+            });
+        }
+    });
+})
 
+app.post('/register', (req, res) => {
+    users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
+        if (err) {
+            res.send({ err: "internal server error please try again later." });
+        } else {
+            if (result) {
+                res.status(400).json({ err: "User Already Exist!!" });
+            } else {
+                if (req.body.username && req.body.password && req.body.contactNumber) {
+                    users.insertOne({
+                        username: req.body.username,
+                        password: req.body.password,
+                        contactNumber: req.body.contactNumber,
+                        questionState: 0,
+                        points: 100,
+                        earnedTickets: [],
+                        ticketMapping: []
+                    });
+                } else {
+                    res.status(400).json({ err: "Invalid Data!!" });
+                }
+            }
+        }
+    });
+})
 
 app.post('/questionDetails', (req, res) => {
     fs.readdir(path, function (err, items) {
         for (var i = 0; i < items.length; i++) {
             let data = items[i].split('_');
-            if (parseInt(data[0]) == req.body.quettionState + 1) {
+            if (parseInt(data[0]) == req.body.questionState + 1) {
                 let _path = path + items[i];
                 fs.readdir(path + items[i], function (err, images) {
                     let _images = []
                     for (var j = 0; j < images.length; j++) {
-                        _images.push('http://api.excellar.io:3000' + _path.substr(1) + '/' + images[j])
+                        _images.push('http://192.168.43.23:3000' + _path.substr(1) + '/' + images[j])
                     }
                     res.json({ imageList: _images, answer: data[1], randomString: data[2] })
                 });
@@ -161,7 +190,7 @@ app.post('/register', (req, res) => {
             if (err) {
                 res.send({ err: "internal server error please try again later." })
             } else {
-                res.send({ quettionState: result.quettionState, points: result.points });
+                res.send({ questionState: result.questionState, points: result.points });
             }
         });
     });
@@ -174,7 +203,7 @@ user = {
     username: "",
     password: "",
     contactNumber: "",
-    quettionState: "",
+    questionState: "",
     points: "",
     earnedTickets: [],
     totalMappedTicket: '',
@@ -188,6 +217,3 @@ drawDetails = {
 }
 
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
-
-
-
