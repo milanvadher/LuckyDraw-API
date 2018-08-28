@@ -187,11 +187,4 @@ drawDetails = {
     result: [{ users: [], ranking: "" }]
 }
 
-<<<<<<< HEAD
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
-=======
-
-
-
-app.listen(3001, () => console.log('Example app listening on port 3000!'))
->>>>>>> c0977bbeec0f0a38e6e6328563b6c1dbf4407b99
