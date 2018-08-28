@@ -9,20 +9,20 @@ MongoClient.connect(url, function (err, client) {
 
     const db = client.db(dbName);
     // insert a single users
-    // const users = db.collection('users');
-    // users.insert({
-    //     username: "ch1",
-    //     password: "123",
-    //     contactNumber: "1231231231",
-    //     quettionState: "0",
-    //     points: "0",
-    //     earnedTickets: [],
-    //     ticketMapping: []
-    // });
+     const users = db.collection('users');
+     users.insert({
+         username: "ch1",
+         password: "123123",
+         contactNumber: "7777901836",
+         quettionState: 0,
+         points: 100,
+         earnedTickets: [],
+        ticketMapping: []
+    });
 
 
     // insert slots
-    const drawSlots = db.collection('drawSlots');
+/*    const drawSlots = db.collection('drawSlots');
     drawSlots.insert({
         date: new Date(2018,10,16,10,0,0,0),
         users: [],
@@ -37,7 +37,7 @@ MongoClient.connect(url, function (err, client) {
         date: new Date(2018,10,16,15,0,0,0),
         users: [],
         result: []
-    });
+    });*/
 });
 
 //   var os = require('os');
