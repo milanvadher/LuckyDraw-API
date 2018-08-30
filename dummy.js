@@ -9,17 +9,23 @@ MongoClient.connect(url, function (err, client) {
 
     const db = client.db(dbName);
     // insert a single users
-     const users = db.collection('users');
-     users.insert({
-         username: "ch1",
-         password: "123123",
-         contactNumber: "7777901836",
-         questionState: 0,
-         points: 100,
-         earnedTickets: [],
-        ticketMapping: []
-    });
+    //  const users = db.collection('users');
+    //  users.insert({
+    //      username: "ch1",
+    //      password: "123123",
+    //      contactNumber: "7777901836",
+    //      questionState: 0,
+    //      points: 100,
+    //      earnedTickets: [],
+    //      ticketMapping: []
+    // });
 
+    // storing tickets number
+    const nextCouponNumber = db.collection('nextCouponNumber');
+    nextCouponNumber.insert({
+        coupon: 1000
+    });
+    
 
     // insert slots
     // const drawSlots = db.collection('drawSlots');
