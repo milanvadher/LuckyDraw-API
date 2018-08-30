@@ -127,6 +127,7 @@ app.post('/register', (req, res) => {
                         earnedTickets: [],
                         ticketMapping: []
                     });
+                    res.send({ msg: "User Register successfully!!" });
                 } else {
                     res.status(400).json({ err: "Invalid Data!!" });
                 }
