@@ -6,26 +6,6 @@ var ifaces = os.networkInterfaces();
 var ip;
 
 app.use("/questions", express.static("questions"));
-Object.keys(ifaces).forEach(function (ifname) {
-    var alias = 0;
-
-    ifaces[ifname].forEach(function (iface) {
-        if ("IPv4" !== iface.family || iface.internal !== false) {
-            // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-            return;
-        }
-
-        if (alias >= 1) {
-            // this single interface has multiple ipv4 addresses
-            console.log(ifname + ":" + alias, iface.address);
-        } else {
-            // this interface has only one ipv4 adress
-            console.log(ifname, iface.address);
-            ip = iface.address;
-        }
-        ++alias;
-    });
-});
 const MongoClient = require("mongodb").MongoClient;
 var bodyParser = require("body-parser");
 var cors = require("cors");
@@ -222,7 +202,7 @@ app.post("/questionDetails", (req, res) => {
                         let _images = [];
                         for (var j = 0; j < images.length; j++) {
                             _images.push(
-                                "http://192.168.43.23:3000" + _path.substr(1) + "/" + images[j]
+                                "https://api.excellar.io:3000" + _path.substr(1) + "/" + images[j]
                             );
                         }
                         res.json({
