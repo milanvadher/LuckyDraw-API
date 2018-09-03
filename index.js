@@ -202,7 +202,7 @@ app.post("/questionDetails", (req, res) => {
                         let _images = [];
                         for (var j = 0; j < images.length; j++) {
                             _images.push(
-                                "https://api.excellar.io:3000" + _path.substr(1) + "/" + images[j]
+                                "http://192.168.43.23:3000" + _path.substr(1) + "/" + images[j]
                             );
                         }
                         res.json({
