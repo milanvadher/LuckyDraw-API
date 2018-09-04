@@ -21,29 +21,29 @@ MongoClient.connect(url, function (err, client) {
     });
 
     // storing tickets number
-    // const nextCouponNumber = db.collection('nextCouponNumber');
-    // nextCouponNumber.insert({
-    //     coupon: 1000
-    // });
+    const nextCouponNumber = db.collection('nextCouponNumber');
+    nextCouponNumber.insert({
+        coupon: 1000
+    });
     
 
     // insert slots
-    // const drawSlots = db.collection('drawSlots');
-    // drawSlots.insert({
-    //     date: new Date(2018, 10, 16, 10, 0, 0, 0),
-    //     users: [],
-    //     result: []
-    // });
-    // drawSlots.insert({
-    //     date: new Date(2018, 10, 16, 12, 0, 0, 0),
-    //     users: [],
-    //     result: []
-    // });
-    // drawSlots.insert({
-    //     date: new Date(2018, 10, 16, 15, 0, 0, 0),
-    //     users: [],
-    //     result: []
-    // });
+    const drawSlots = db.collection('drawSlots');
+    drawSlots.insert({
+        date: new Date(2018, 10, 16, 10, 0, 0, 0),
+        users: [],
+        result: []
+    });
+    drawSlots.insert({
+        date: new Date(2018, 10, 16, 12, 0, 0, 0),
+        users: [],
+        result: []
+    });
+    drawSlots.insert({
+        date: new Date(2018, 10, 16, 15, 0, 0, 0),
+        users: [],
+        result: []
+    });
 });
 
 //   var os = require('os');
