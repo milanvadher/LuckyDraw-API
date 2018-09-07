@@ -21,10 +21,10 @@ MongoClient.connect(url, function (err, client) {
     // });
 
     // storing tickets number
-    // const nextCouponNumber = db.collection('nextCouponNumber');
-    // nextCouponNumber.insert({
-    //     coupon: 1000
-    // });
+    const nextCouponNumber = db.collection('nextCouponNumber');
+    nextCouponNumber.insert({
+        coupon: 1000
+    });
     
 
     // insert slots
