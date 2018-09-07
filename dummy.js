@@ -9,16 +9,16 @@ MongoClient.connect(url, function (err, client) {
 
     const db = client.db(dbName);
     // insert a single users
-     const users = db.collection('users');
-     users.insert({
-         username: "ch1",
-         password: "123123",
-         contactNumber: "7777901836",
-         questionState: 2,
-         points: 100,
-         earnedTickets: [1007, 1008, 1009, 1010, 1011],
-         ticketMapping: []
-    });
+    //  const users = db.collection('users');
+    //  users.insert({
+    //      username: "RootNode",
+    //      password: "123123",
+    //      contactNumber: "7777901836",
+    //      questionState: 2,
+    //      points: 100,
+    //      earnedTickets: [],
+    //      ticketMapping: []
+    // });
 
     // storing tickets number
     // const nextCouponNumber = db.collection('nextCouponNumber');
@@ -28,22 +28,22 @@ MongoClient.connect(url, function (err, client) {
     
 
     // insert slots
-    // const drawSlots = db.collection('drawSlots');
-    // drawSlots.insert({
-    //     date: new Date(2018, 10, 16, 10, 0, 0, 0),
-    //     users: [],
-    //     result: []
-    // });
-    // drawSlots.insert({
-    //     date: new Date(2018, 10, 16, 12, 0, 0, 0),
-    //     users: [],
-    //     result: []
-    // });
-    // drawSlots.insert({
-    //     date: new Date(2018, 10, 16, 15, 0, 0, 0),
-    //     users: [],
-    //     result: []
-    // });
+    const drawSlots = db.collection('drawSlots');
+    drawSlots.insert({
+        date: new Date(2018, 10, 16, 10, 0, 0, 0),
+        users: [],
+        result: []
+    });
+    drawSlots.insert({
+        date: new Date(2018, 10, 16, 12, 0, 0, 0),
+        users: [],
+        result: []
+    });
+    drawSlots.insert({
+        date: new Date(2018, 10, 16, 15, 0, 0, 0),
+        users: [],
+        result: []
+    });
 });
 
 //   var os = require('os');

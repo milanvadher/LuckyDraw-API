@@ -4,6 +4,7 @@ var fs = require("fs");
 var os = require("os");
 var ifaces = os.networkInterfaces();
 var ip;
+const request = require('request');
 
 app.use("/questions", express.static("questions"));
 const MongoClient = require("mongodb").MongoClient;
@@ -112,6 +113,58 @@ app.post("/saveUserData", (req, res) => {
     });
 });
 
+
+app.post("/otp", (req, res) => {
+    users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
+        if (err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            if (result) {
+                if (result.isNewUser === true) {
+                    request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
+                        if (err) {
+                            console.log(err);
+                            res.status(500).json({ err: "internal server error please try again later." });
+                        } else {
+                            res.send({ msg: 'OTP is send to your Contact number.', isNewUser: true })
+                        }
+                    });
+                } else {
+                    res.send({
+                        questionState: result.questionState,
+                        points: result.points,
+                        contactNumber: result.contactNumber,
+                        username: result.username,
+                        isNewUser: false
+                    });
+                }
+            } else {
+                console.log(req.body)
+                if (req.body.contactNumber && req.body.otp) {
+                    request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
+                        if (err) {
+                            console.log(err);
+                            res.status(500).json({ err: "internal server error please try again later." });
+                        } else {
+                            res.send({ msg: 'OTP is send to your Contact number.', isNewUser: true })
+                            users.insertOne({
+                                username: '',
+                                contactNumber: req.body.contactNumber,
+                                questionState: 0,
+                                points: 100,
+                                earnedTickets: [],
+                                isNewUser: true
+                            });
+                        }
+                    });
+                } else {
+                    res.status(400).json({ err: "Invalid Data!!" });
+                }
+            }
+        }
+    });
+});
+
 app.post("/register", (req, res) => {
     users.findOne({ contactNumber: req.body.contactNumber }, function (
         err,
@@ -121,22 +174,25 @@ app.post("/register", (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             if (result) {
-                res.status(400).json({ err: "User Already Exist!!" });
-            } else {
-                if (req.body.username && req.body.password && req.body.contactNumber) {
-                    users.insertOne({
-                        username: req.body.username,
-                        password: req.body.password,
-                        contactNumber: req.body.contactNumber,
+                if (req.body.username && req.body.contactNumber) {
+                    users.updateOne({ contactNumber: req.body.contactNumber },
+                        {
+                            $set: {
+                                username: req.body.username,
+                                isNewUser: false
+                            }
+                        });
+                    res.send({
                         questionState: 0,
                         points: 100,
-                        earnedTickets: [],
-                        ticketMapping: []
+                        contactNumber: req.body.contactNumber,
+                        username: req.body.username
                     });
-                    res.send({ msg: "User Register successfully!!" });
                 } else {
-                    res.status(400).json({ err: "Invalid Data!!" });
+                    res.status(401).json({ err: "Invalid Data!!" });
                 }
+            } else {
+                res.status(400).json({ err: "User Not Found!!" });
             }
         }
     });
