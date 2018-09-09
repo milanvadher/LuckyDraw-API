@@ -90,16 +90,39 @@ app.post("/ticketDetails", (req, res) => {
 });
 
 app.post("/saveUserData", (req, res) => {
-    users.findOne({ contactNumber: req.body.mobileNo }, function (err, result) {
+    users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
         if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
-            users.updateOne({ contactNumber: req.body.mobileNo }, { $set: { questionState: req.body.questionState, points: req.body.points } }, function (err, _result) {
+            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { questionState: req.body.questionState, points: req.body.points } }, function (err, _result) {
                 if (err) {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
-                    console.log('result:', _result);
-                    users.findOne({ contactNumber: req.body.mobileNo }, function (err, user) {
+                    users.findOne({ contactNumber: req.body.contactNumber }, function (err, user) {
+                        res.send({
+                            questionState: user.questionState,
+                            points: user.points,
+                            contactNumber: user.contactNumber,
+                            username: user.username
+                        });
+                    });
+                }
+            });
+        }
+    });
+});
+
+
+app.post("/profileUpdate", (req, res) => {
+    users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
+        if (err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { username: req.body.username } }, function (err, _result) {
+                if (err) {
+                    res.status(500).json({ err: "internal server error please try again later." });
+                } else {
+                    users.findOne({ contactNumber: req.body.contactNumber }, function (err, user) {
                         res.send({
                             questionState: user.questionState,
                             points: user.points,
@@ -120,26 +143,21 @@ app.post("/otp", (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             if (result) {
-                if (result.isNewUser === true) {
-                    request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
-                        if (err) {
-                            console.log(err);
-                            res.status(500).json({ err: "internal server error please try again later." });
-                        } else {
-                            res.send({ msg: 'OTP is send to your Contact number.', isNewUser: true })
-                        }
-                    });
-                } else {
-                    res.send({
-                        questionState: result.questionState,
-                        points: result.points,
-                        contactNumber: result.contactNumber,
-                        username: result.username,
-                        isNewUser: false
-                    });
-                }
+                request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).json({ err: "internal server error please try again later." });
+                    } else {
+                        res.send({
+                            questionState: result.questionState,
+                            points: result.points,
+                            contactNumber: result.contactNumber,
+                            username: result.username,
+                            isNewUser: false
+                        });
+                    }
+                });
             } else {
-                console.log(req.body)
                 if (req.body.contactNumber && req.body.otp) {
                     request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
                         if (err) {
@@ -252,13 +270,13 @@ app.post("/questionDetails", (req, res) => {
         } else {
             for (var i = 0; i < items.length; i++) {
                 let data = items[i].split("_");
-                if (parseInt(data[0]) == req.body.questionState + 1) {
+                if (parseInt(data[0]) === req.body.questionState + 1) {
                     let _path = path + items[i];
                     fs.readdir(path + items[i], function (err, images) {
                         let _images = [];
                         for (var j = 0; j < images.length; j++) {
                             _images.push(
-                                "http://luckydrawapi.dadabhagwan.org" + _path.substr(1) + "/" + images[j]
+                                "http://192.168.43.23:3000" + _path.substr(1) + "/" + images[j]
                             );
                         }
                         res.json({
@@ -303,13 +321,11 @@ app.post("/generateTicket", (req, res) => {
                         if (err) {
                             console.log("findone", err);
                         } else {
-                            console.log("dbres", dbRes, err);
                             users.updateOne(
                                 { contactNumber: req.body.contactNumber },
                                 { $push: { earnedTickets: dbRes.coupon } },
                                 { upsert: true },
                                 function (err, _result) {
-                                    console.log("_result", _result);
                                     if (err) {
                                         res.send({ msg: err });
                                     } else {
@@ -317,7 +333,17 @@ app.post("/generateTicket", (req, res) => {
                                             { coupon: dbRes.coupon },
                                             { $inc: { coupon: 1 } }
                                         );
-                                        res.send({ msg: "You have got Ticket " + dbRes.coupon });
+                                        // send sms to user
+                                        console.log('Hello, suprise ****', req.body.contactNumber, dbRes.coupon)
+                                        // request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon : ' + dbRes.coupon + '.', { json: true }, (err, otp, body) => {
+                                        request("http://api.msg91.com/api/sendhttp.php?country=91&sender=MSGIND&route=4&mobiles=+91"+ req.body.contactNumber +"&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon :" + dbRes.coupon + ".", { json: true }, (err, otp, body) => {
+                                            if (err) {
+                                                console.log(err);
+                                                res.status(500).json({ err: "internal server error please try again later." });
+                                            } else {
+                                                res.send({ msg: "You have got Ticket " + dbRes.coupon });
+                                            }
+                                        });
                                     }
                                 }
                             );
@@ -351,4 +377,4 @@ drawDetails = {
     result: [{ users: [], ranking: "" }]
 }
 
-app.listen(60371, () => console.log("Example app listening on port 60371!"));
+app.listen(3000, () => console.log("Example app listening on port 3000!"));
