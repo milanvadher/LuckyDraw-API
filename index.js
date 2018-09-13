@@ -226,7 +226,8 @@ app.post("/mapTicket", (req, res) => {
                     if (err) {
                         res.status(500).json({ err: "internal server error please try again later." });
                     } else {
-                        users.updateOne({ contactNumber: req.body.contactNumber }, { $push: { ticketMapping: { ticketNo: req.body.ticket, assignDate: new Date(req.body.date) } }, $pull: { earnedTickets: req.body.ticket } }, (err, success) => {
+                        const date = req.body.date;
+                        users.updateOne({ contactNumber: req.body.contactNumber }, { $push: { ticketMapping: { ticketNo: req.body.ticket, assignDate: new Date(date[0], date[1]-1, date[2], date[3], date[4], date[5], date[6]) } }, $pull: { earnedTickets: req.body.ticket } }, (err, success) => {
                             if (err) {
                                 res.status(500).json({ err: "internal server error please try again later." });
                             } else {
