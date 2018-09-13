@@ -9,41 +9,41 @@ MongoClient.connect(url, function (err, client) {
 
     const db = client.db(dbName);
     // insert a single users
-    //  const users = db.collection('users');
-    //  users.insert({
-    //      username: "RootNode",
-    //      password: "123123",
-    //      contactNumber: "7777901836",
-    //      questionState: 2,
-    //      points: 100,
-    //      earnedTickets: [],
-    //      ticketMapping: []
-    // });
+     const users = db.collection('users');
+     users.insert({
+         username: "RootNode",
+         password: "123123",
+         contactNumber: "7777901836",
+         questionState: 2,
+         points: 100,
+         earnedTickets: [2001, 2002, 2003, 2004, 2005, 2006],
+         ticketMapping: [{ ticketNo: 1997, assignDate: new Date(2018, 10, 16, 10, 0, 0, 0) }, { ticketNo: 1998, assignDate: new Date(2018, 10, 16, 10, 0, 0, 0) }, { ticketNo: 1999, assignDate: new Date(2018, 10, 16, 10, 0, 0, 0) }]
+    });
 
     // storing tickets number
-    const nextCouponNumber = db.collection('nextCouponNumber');
-    nextCouponNumber.insert({
-        coupon: 1000
-    });
+    // const nextCouponNumber = db.collection('nextCouponNumber');
+    // nextCouponNumber.insert({
+    //     coupon: 1000
+    // });
     
 
     // insert slots
-    const drawSlots = db.collection('drawSlots');
-    drawSlots.insert({
-        date: new Date(2018, 10, 16, 10, 0, 0, 0),
-        users: [],
-        result: []
-    });
-    drawSlots.insert({
-        date: new Date(2018, 10, 16, 12, 0, 0, 0),
-        users: [],
-        result: []
-    });
-    drawSlots.insert({
-        date: new Date(2018, 10, 16, 15, 0, 0, 0),
-        users: [],
-        result: []
-    });
+    // const drawSlots = db.collection('drawSlots');
+    // drawSlots.insert({
+    //     date: new Date(2018, 10, 16, 10, 0, 0, 0),
+    //     users: [],
+    //     result: []
+    // });
+    // drawSlots.insert({
+    //     date: new Date(2018, 10, 16, 12, 0, 0, 0),
+    //     users: [],
+    //     result: []
+    // });
+    // drawSlots.insert({
+    //     date: new Date(2018, 10, 16, 15, 0, 0, 0),
+    //     users: [],
+    //     result: []
+    // });
 });
 
 //   var os = require('os');
