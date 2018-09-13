@@ -226,7 +226,7 @@ app.post("/mapTicket", (req, res) => {
                     if (err) {
                         res.status(500).json({ err: "internal server error please try again later." });
                     } else {
-                        users.updateOne({ contactNumber: req.body.contactNumber }, { $push: { ticketMapping: req.body.ticket }, $pull: { earnedTickets: req.body.ticket } }, (err, success) => {
+                        users.updateOne({ contactNumber: req.body.contactNumber }, { $push: { ticketMapping: { ticketNo: req.body.ticket, assignDate: new Date(req.body.date) } }, $pull: { earnedTickets: req.body.ticket } }, (err, success) => {
                             if (err) {
                                 res.status(500).json({ err: "internal server error please try again later." });
                             } else {
@@ -336,7 +336,7 @@ app.post("/generateTicket", (req, res) => {
                                         // send sms to user
                                         console.log('Hello, suprise ****', req.body.contactNumber, dbRes.coupon)
                                         // request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon : ' + dbRes.coupon + '.', { json: true }, (err, otp, body) => {
-                                        request("http://api.msg91.com/api/sendhttp.php?country=91&sender=MSGIND&route=4&mobiles=+91"+ req.body.contactNumber +"&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon :" + dbRes.coupon + ".", { json: true }, (err, otp, body) => {
+                                        request("http://api.msg91.com/api/sendhttp.php?country=91&sender=MSGIND&route=4&mobiles=+91" + req.body.contactNumber + "&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon :" + dbRes.coupon + ".", { json: true }, (err, otp, body) => {
                                             if (err) {
                                                 console.log(err);
                                                 res.status(500).json({ err: "internal server error please try again later." });
@@ -357,9 +357,42 @@ app.post("/generateTicket", (req, res) => {
     );
 });
 
+app.post("/userList", (req, res) => {
+    if (req.body.contactNumber == "7574852413") {
+        users.find({}).toArray((_err, users) => {
+            if (_err) {
+                res.send({ err: "Internal server error", _err })
+            } else {
+                res.send(users);
+            }
+        });
+    } else {
+        res.status(401).json({ err: "You are unauthorised." });
+    }
+});
+
+app.post("/deleteUser", (req, res) => {
+    if (req.body.contactNumber == "7574852413") {
+        users.deleteOne({ contactNumber: req.body.deleteUserContact }, (err, _user) => {
+            if (err) {
+                res.status(500).json({ err: "internal server error please try again later." });
+            } else {
+                if (_user) {
+                    res.send({ msg: 'User Deleted successfully.' })
+                } else {
+                    res.status(400).json({ err: "No user Found!!" });
+                }
+            }
+        })
+    } else {
+        res.status(401).json({ err: "You are unauthorised." });
+    }
+})
+
 app.get("/test", (req, res) => {
     res.send({ test: "its working check your code first....." });
 });
+
 user = {
     username: "",
     password: "",
