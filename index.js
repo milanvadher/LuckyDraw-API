@@ -334,8 +334,9 @@ app.post("/generateTicket", (req, res) => {
                                             { coupon: dbRes.coupon },
                                             { $inc: { coupon: 1 } }
                                         );
+                                        res.send({ msg: "You have got Ticket " + dbRes.coupon });
                                         // send sms to user
-                                        console.log('Hello, suprise ****', req.body.contactNumber, dbRes.coupon)
+                                        /*console.log('Hello, suprise ****', req.body.contactNumber, dbRes.coupon)
                                         // request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon : ' + dbRes.coupon + '.', { json: true }, (err, otp, body) => {
                                         request("http://api.msg91.com/api/sendhttp.php?country=91&sender=MSGIND&route=4&mobiles=+91" + req.body.contactNumber + "&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon :" + dbRes.coupon + ".", { json: true }, (err, otp, body) => {
                                             if (err) {
@@ -344,7 +345,7 @@ app.post("/generateTicket", (req, res) => {
                                             } else {
                                                 res.send({ msg: "You have got Ticket " + dbRes.coupon });
                                             }
-                                        });
+                                        });*/
                                     }
                                 }
                             );
