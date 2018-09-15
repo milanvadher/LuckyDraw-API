@@ -38,6 +38,7 @@ MongoClient.connect(
         users = db.collection("users");
         drawSlots = db.collection("drawSlots");
         nextCouponNumber = db.collection("nextCouponNumber");
+        notifications = db.collection("notifications");
     }
 );
 
@@ -118,7 +119,11 @@ app.post("/profileUpdate", (req, res) => {
         if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
-            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { username: req.body.username } }, function (err, _result) {
+            users.updateOne({ contactNumber: req.body.contactNumber }, 
+                { $set: {
+                 username: req.body.username,
+                 password: req.body.password
+                } }, function (err, _result) {
                 if (err) {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
@@ -143,7 +148,8 @@ app.post("/otp", (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             if (result) {
-                request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
+                res.send({ msg: 'You are already registered.', isNewUser: false })
+                /*request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
                     if (err) {
                         console.log(err);
                         res.status(500).json({ err: "internal server error please try again later." });
@@ -156,7 +162,7 @@ app.post("/otp", (req, res) => {
                             isNewUser: false
                         });
                     }
-                });
+                });*/
             } else {
                 if (req.body.contactNumber && req.body.otp) {
                     request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
@@ -179,6 +185,71 @@ app.post("/otp", (req, res) => {
                     res.status(400).json({ err: "Invalid Data!!" });
                 }
             }
+        }
+    });
+});
+
+
+app.post("/forgotPassword", (req, res) => {
+    users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
+        if (err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            if (result) {
+                request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).json({ err: "internal server error please try again later." });
+                    } else {
+                        res.send({ msg: 'OTP is send to your Contact number.', isNewUser: false })
+                    }
+                });
+            } 
+        }
+    });
+});
+
+app.post("/notify", (req, res) => {
+    notifications.insert({
+        created_at: (new Date).getTime(),
+        title: req.body.title,
+        msg: req.body.msg
+    }, (err, result) => {
+        if(err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            res.send({ msg: 'Notification sent.' })
+        }
+    });
+});
+
+
+app.post("/getNotifications", (req, res) => {
+    users.findOne({contactNumber: req.body.contactNumber}, (err, result) => {
+        if(err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            let lastSeenDate = new Date();
+            lastSeenDate.setDate(lastSeenDate.getDate() - 1)
+            let lastSeenTime = lastSeenDate.getTime()
+            if(result.lastSeen) {
+                lastSeenTime = result.lastSeen;
+            } 
+            notifications.find({created_at: { $gte: lastSeenTime}}, (err, result1) => {
+                if(err) {
+                    res.status(500).json({ err: "internal server error please try again later." });
+                } else {
+                    users.updateOne({contactNumber: req.body.contactNumber}, {$set: {lastSeen: (new Date).getTime()}})
+                    result1.toArray((error, resultMsg) => {
+                        if(error) {
+                            res.status(500).json({ err: "internal server error please try again later." });
+                        } else {
+                            res.send({ msgs:  resultMsg});
+                        }
+                    })
+                    
+                }
+            });
         }
     });
 });
@@ -226,7 +297,8 @@ app.post("/mapTicket", (req, res) => {
                     if (err) {
                         res.status(500).json({ err: "internal server error please try again later." });
                     } else {
-                        users.updateOne({ contactNumber: req.body.contactNumber }, { $push: { ticketMapping: { ticketNo: req.body.ticket, assignDate: new Date(req.body.date) } }, $pull: { earnedTickets: req.body.ticket } }, (err, success) => {
+                        const date = req.body.date;
+                        users.updateOne({ contactNumber: req.body.contactNumber }, { $push: { ticketMapping: { ticketNo: req.body.ticket, assignDate: new Date(date[0], date[1]-1, date[2], date[3], date[4], date[5], date[6]) } }, $pull: { earnedTickets: req.body.ticket } }, (err, success) => {
                             if (err) {
                                 res.status(500).json({ err: "internal server error please try again later." });
                             } else {
@@ -276,7 +348,7 @@ app.post("/questionDetails", (req, res) => {
                         let _images = [];
                         for (var j = 0; j < images.length; j++) {
                             _images.push(
-                                "http://192.168.43.23:3000" + _path.substr(1) + "/" + images[j]
+                                "http://luckydrawapi.dadabhagwan.org" + _path.substr(1) + "/" + images[j]
                             );
                         }
                         res.json({
@@ -304,6 +376,20 @@ app.post("/getDrawSlots", (req, res) => {
         });
 });
 
+/*app.post("/generateResult", (req, res) => {
+    drawSlots.find({date: new Date("2018-11-16T15:00:00Z")}).
+    toArray((error, result) => {
+        if(error) {
+
+        } else {
+            slotUsers = result[0].users;
+            p = {}
+            slotUsers.forEach((k) => p[k["contactNumber"]] ? p[k["contactNumber"]].push(k["ticket"]) : p[k["contactNumber"]] = [k["ticket"]]);
+            console.log(p);
+            Math.ceil(Math.random() * Object.keys(p).length)
+        }
+    });
+})*/
 
 
 app.post("/generateTicket", (req, res) => {
@@ -333,8 +419,9 @@ app.post("/generateTicket", (req, res) => {
                                             { coupon: dbRes.coupon },
                                             { $inc: { coupon: 1 } }
                                         );
+                                        res.send({ msg: "You have got Ticket " + dbRes.coupon });
                                         // send sms to user
-                                        console.log('Hello, suprise ****', req.body.contactNumber, dbRes.coupon)
+                                        /*console.log('Hello, suprise ****', req.body.contactNumber, dbRes.coupon)
                                         // request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon : ' + dbRes.coupon + '.', { json: true }, (err, otp, body) => {
                                         request("http://api.msg91.com/api/sendhttp.php?country=91&sender=MSGIND&route=4&mobiles=+91" + req.body.contactNumber + "&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon :" + dbRes.coupon + ".", { json: true }, (err, otp, body) => {
                                             if (err) {
@@ -343,7 +430,7 @@ app.post("/generateTicket", (req, res) => {
                                             } else {
                                                 res.send({ msg: "You have got Ticket " + dbRes.coupon });
                                             }
-                                        });
+                                        });*/
                                     }
                                 }
                             );
@@ -410,4 +497,4 @@ drawDetails = {
     result: [{ users: [], ranking: "" }]
 }
 
-app.listen(3000, () => console.log("Example app listening on port 3000!"));
+app.listen(60371, () => console.log("Example app listening on port 60371!"));
