@@ -20,6 +20,12 @@ MongoClient.connect(url, function (err, client) {
          ticketMapping: [{ ticketNo: 1997, assignDate: new Date(2018, 10, 16, 10, 0, 0, 0) }, { ticketNo: 1998, assignDate: new Date(2018, 10, 16, 10, 0, 0, 0) }, { ticketNo: 1999, assignDate: new Date(2018, 10, 16, 10, 0, 0, 0) }]
     });
 
+    const notifications = db.collection("notifications");
+    notifications.insert({
+        created_at: (new Date).getTime(),
+        msg: ""
+    })
+
     // storing tickets number
     // const nextCouponNumber = db.collection('nextCouponNumber');
     // nextCouponNumber.insert({
