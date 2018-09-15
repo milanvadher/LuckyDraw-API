@@ -210,7 +210,7 @@ app.post("/forgotPassword", (req, res) => {
             users.updateOne({ contactNumber: req.body.contactNumber },
                 {
                     $set: {
-                        username: req.body.username
+                        username: req.body.username,
                         password: req.body.password
                     }
                 }, function (err, _result) {
