@@ -118,7 +118,11 @@ app.post("/profileUpdate", (req, res) => {
         if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
-            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { username: req.body.username } }, function (err, _result) {
+            users.updateOne({ contactNumber: req.body.contactNumber }, 
+                { $set: {
+                 username: req.body.username,
+                 password: req.body.password
+                } }, function (err, _result) {
                 if (err) {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
@@ -143,7 +147,8 @@ app.post("/otp", (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             if (result) {
-                request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
+                res.send({ msg: 'You are already registered.', isNewUser: false })
+                /*request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
                     if (err) {
                         console.log(err);
                         res.status(500).json({ err: "internal server error please try again later." });
@@ -156,7 +161,7 @@ app.post("/otp", (req, res) => {
                             isNewUser: false
                         });
                     }
-                });
+                });*/
             } else {
                 if (req.body.contactNumber && req.body.otp) {
                     request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
@@ -179,6 +184,26 @@ app.post("/otp", (req, res) => {
                     res.status(400).json({ err: "Invalid Data!!" });
                 }
             }
+        }
+    });
+});
+
+
+app.post("/forgotPassword", (req, res) => {
+    users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
+        if (err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            if (result) {
+                request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).json({ err: "internal server error please try again later." });
+                    } else {
+                        res.send({ msg: 'OTP is send to your Contact number.', isNewUser: false })
+                    }
+                });
+            } 
         }
     });
 });
@@ -305,6 +330,20 @@ app.post("/getDrawSlots", (req, res) => {
         });
 });
 
+/*app.post("/generateResult", (req, res) => {
+    drawSlots.find({date: new Date("2018-11-16T15:00:00Z")}).
+    toArray((error, result) => {
+        if(error) {
+
+        } else {
+            slotUsers = result[0].users;
+            p = {}
+            slotUsers.forEach((k) => p[k["contactNumber"]] ? p[k["contactNumber"]].push(k["ticket"]) : p[k["contactNumber"]] = [k["ticket"]]);
+            console.log(p);
+            Math.ceil(Math.random() * Object.keys(p).length)
+        }
+    });
+})*/
 
 
 app.post("/generateTicket", (req, res) => {
