@@ -212,6 +212,7 @@ app.post("/forgotPassword", (req, res) => {
 app.post("/notify", (req, res) => {
     notifications.insert({
         created_at: (new Date).getTime(),
+        title: req.body.title,
         msg: req.body.msg
     }, (err, result) => {
         if(err) {
