@@ -213,7 +213,7 @@ app.post("/notify", (req, res) => {
     notifications.insert({
         created_at: (new Date).getTime(),
         msg: req.body.msg
-    }, (err, res) => {
+    }, (err, result) => {
         if(err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
@@ -224,22 +224,22 @@ app.post("/notify", (req, res) => {
 
 
 app.get("/getNotifications", (req, res) => {
-    users.findOne({contactNumber: req.body.contactNumber}, (err, res) => {
+    users.findOne({contactNumber: req.body.contactNumber}, (err, result) => {
         if(err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             let lastSeenDate = new Date();
             lastSeenDate.setDate(lastSeenDate.getDate() - 1)
             let lastSeenTime = lastSeenDate.getTime()
-            if(res.lastSeen) {
-                lastSeenTime = res.lastSeen;
+            if(result.lastSeen) {
+                lastSeenTime = result.lastSeen;
             } 
-            notifications.findMany({created_at: { $gte: lastSeenTime}}, (err, res) => {
+            notifications.findMany({created_at: { $gte: lastSeenTime}}, (err, result1) => {
                 if(err) {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
                     users.updateOne({contactNumber: req.body.contactNumber}, {$set: {lastSeen: (new Date).getTime()}})
-                    res.send({ msgs: res.toArray() })
+                    res.send({ msgs: result1.toArray() })
                 }
             });
         }
