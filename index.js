@@ -209,7 +209,7 @@ app.post("/forgotPassword", (req, res) => {
     });
 });
 
-app.post("notify", (req, res) => {
+app.post("/notify", (req, res) => {
     notifications.insert({
         created_at: (new Date).getTime(),
         msg: req.body.msg
@@ -238,6 +238,7 @@ app.get("/getNotifications", (req, res) => {
                 if(err) {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
+                    users.updateOne({contactNumber: req.body.contactNumber}, {$set: {lastSeen: (new Date).getTime()}})
                     res.send({ msgs: res.toArray() })
                 }
             });
