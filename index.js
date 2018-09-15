@@ -131,8 +131,8 @@ app.post("/profileUpdate", (req, res) => {
             users.updateOne({ contactNumber: req.body.contactNumber },
                 {
                     $set: {
-                        username: req.body.username,
-                        password: req.body.password
+                        username: req.body.username
+                        //password: req.body.password
                     }
                 }, function (err, _result) {
                     if (err) {
@@ -207,6 +207,33 @@ app.post("/forgotPassword", (req, res) => {
         if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
+            users.updateOne({ contactNumber: req.body.contactNumber },
+                {
+                    $set: {
+                        username: req.body.username
+                        password: req.body.password
+                    }
+                }, function (err, _result) {
+                    if (err) {
+                        res.status(500).json({ err: "internal server error please try again later." });
+                    } else {
+                        users.findOne({ contactNumber: req.body.contactNumber }, function (err, user) {
+                            res.send({
+                                questionState: user.questionState,
+                                points: user.points,
+                                contactNumber: user.contactNumber,
+                                username: user.username,
+                                profile: true,
+                            });
+                        });
+                    }
+                });
+        }
+    });
+    /*users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
+        if (err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
             if (result) {
                 request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
                     if (err) {
@@ -218,7 +245,7 @@ app.post("/forgotPassword", (req, res) => {
                 });
             }
         }
-    });
+    });*/
 });
 
 app.post("/notify", (req, res) => {
