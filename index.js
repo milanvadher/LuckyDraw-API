@@ -77,6 +77,14 @@ app.get("/questionState", (req, res) => {
     });
 });
 
+app.post("/adminLogin", (req,res) => {
+    if (req.body.email === 'admin@gnc.com' && req.body.password === 'Admin@GNC') {
+        res.send({token: 'asfdajkhfkksadjnfkjndjskankjfndsjkfkjdskafkandskanfksanafkds'});
+    } else {
+        res.status(401).json({ err: "You are not authorised" });
+    }
+})
+
 app.post("/ticketDetails", (req, res) => {
     users.findOne({ contactNumber: req.body.contactNumber }, function (
         err,
