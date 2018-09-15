@@ -160,8 +160,8 @@ app.post("/otp", (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             if (result) {
-                res.send({ msg: 'You are already registered.', isNewUser: false, profile: true })
-                /*request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
+                //res.send({ msg: 'You are already registered.', isNewUser: false, profile: true })
+                request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
                     if (err) {
                         console.log(err);
                         res.status(500).json({ err: "internal server error please try again later." });
@@ -171,10 +171,11 @@ app.post("/otp", (req, res) => {
                             points: result.points,
                             contactNumber: result.contactNumber,
                             username: result.username,
-                            isNewUser: false
+                            isNewUser: false,
+                            profile: true
                         });
                     }
-                });*/
+                });
             } else {
                 if (req.body.contactNumber && req.body.otp) {
                     request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! This is your one-time password ' + req.body.otp + '.', { json: true }, (err, otp, body) => {
@@ -210,7 +211,6 @@ app.post("/forgotPassword", (req, res) => {
             users.updateOne({ contactNumber: req.body.contactNumber },
                 {
                     $set: {
-                        username: req.body.username,
                         password: req.body.password
                     }
                 }, function (err, _result) {
