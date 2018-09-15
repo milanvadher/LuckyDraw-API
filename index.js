@@ -182,7 +182,7 @@ app.post("/otp", (req, res) => {
                             console.log(err);
                             res.status(500).json({ err: "internal server error please try again later." });
                         } else {
-                            res.send({ msg: 'OTP is send to your Contact number.', isNewUser: true })
+                            res.send({ msg: 'OTP is send to your Contact number.', isNewUser: true, username: result.username})
                             // users.insertOne({
                             //     username: '',
                             //     contactNumber: req.body.contactNumber,
