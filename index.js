@@ -234,12 +234,19 @@ app.post("/getNotifications", (req, res) => {
             if(result.lastSeen) {
                 lastSeenTime = result.lastSeen;
             } 
-            notifications.findMany({created_at: { $gte: lastSeenTime}}, (err, result1) => {
+            notifications.find({created_at: { $gte: lastSeenTime}}, (err, result1) => {
                 if(err) {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
                     users.updateOne({contactNumber: req.body.contactNumber}, {$set: {lastSeen: (new Date).getTime()}})
-                    res.send({ msgs: result1.toArray() })
+                    result1.toArray((error, resultMsg) => {
+                        if(error) {
+                            res.status(500).json({ err: "internal server error please try again later." });
+                        } else {
+                            res.send({ msgs:  resultMsg});
+                        }
+                    })
+                    
                 }
             });
         }
