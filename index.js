@@ -352,8 +352,8 @@ app.post("/questionDetails", (req, res) => {
                         let _images = [];
                         for (var j = 0; j < images.length; j++) {
                             _images.push(
-                                // "http://luckydrawapi.dadabhagwan.org" + _path.substr(1) + "/" + images[j]
-                                "http://192.168.43.23:3000" + _path.substr(1) + "/" + images[j]
+                                "http://luckydrawapi.dadabhagwan.org" + _path.substr(1) + "/" + images[j]
+                                // "http://192.168.43.23:3000" + _path.substr(1) + "/" + images[j]
                             );
                         }
                         res.json({
@@ -502,5 +502,5 @@ drawDetails = {
     result: [{ users: [], ranking: "" }]
 }
 
-// app.listen(60371, () => console.log("Example app listening on port 60371!"));
-app.listen(3000, () => console.log("Example app listening on port 3000!"));
+app.listen(60371, () => console.log("Example app listening on port 60371!"));
+// app.listen(3000, () => console.log("Example app listening on port 3000!"));
