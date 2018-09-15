@@ -223,7 +223,7 @@ app.post("/notify", (req, res) => {
 });
 
 
-app.get("/getNotifications", (req, res) => {
+app.post("/getNotifications", (req, res) => {
     users.findOne({contactNumber: req.body.contactNumber}, (err, result) => {
         if(err) {
             res.status(500).json({ err: "internal server error please try again later." });
