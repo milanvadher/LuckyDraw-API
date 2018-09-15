@@ -55,7 +55,8 @@ app.post("/login", (req, res) => {
                         questionState: result.questionState,
                         points: result.points,
                         contactNumber: result.contactNumber,
-                        username: result.username
+                        username: result.username,
+                        profile: true,
                     });
                 } else {
                     res.status(404).json({ err: "user not found" });
@@ -119,24 +120,27 @@ app.post("/profileUpdate", (req, res) => {
         if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
-            users.updateOne({ contactNumber: req.body.contactNumber }, 
-                { $set: {
-                 username: req.body.username,
-                 password: req.body.password
-                } }, function (err, _result) {
-                if (err) {
-                    res.status(500).json({ err: "internal server error please try again later." });
-                } else {
-                    users.findOne({ contactNumber: req.body.contactNumber }, function (err, user) {
-                        res.send({
-                            questionState: user.questionState,
-                            points: user.points,
-                            contactNumber: user.contactNumber,
-                            username: user.username
+            users.updateOne({ contactNumber: req.body.contactNumber },
+                {
+                    $set: {
+                        username: req.body.username,
+                        password: req.body.password
+                    }
+                }, function (err, _result) {
+                    if (err) {
+                        res.status(500).json({ err: "internal server error please try again later." });
+                    } else {
+                        users.findOne({ contactNumber: req.body.contactNumber }, function (err, user) {
+                            res.send({
+                                questionState: user.questionState,
+                                points: user.points,
+                                contactNumber: user.contactNumber,
+                                username: user.username,
+                                profile: true,
+                            });
                         });
-                    });
-                }
-            });
+                    }
+                });
         }
     });
 });
@@ -171,14 +175,14 @@ app.post("/otp", (req, res) => {
                             res.status(500).json({ err: "internal server error please try again later." });
                         } else {
                             res.send({ msg: 'OTP is send to your Contact number.', isNewUser: true })
-                            users.insertOne({
-                                username: '',
-                                contactNumber: req.body.contactNumber,
-                                questionState: 0,
-                                points: 100,
-                                earnedTickets: [],
-                                isNewUser: true
-                            });
+                            // users.insertOne({
+                            //     username: '',
+                            //     contactNumber: req.body.contactNumber,
+                            //     questionState: 0,
+                            //     points: 100,
+                            //     earnedTickets: [],
+                            //     isNewUser: true
+                            // });
                         }
                     });
                 } else {
@@ -204,7 +208,7 @@ app.post("/forgotPassword", (req, res) => {
                         res.send({ msg: 'OTP is send to your Contact number.', isNewUser: false })
                     }
                 });
-            } 
+            }
         }
     });
 });
@@ -215,7 +219,7 @@ app.post("/notify", (req, res) => {
         title: req.body.title,
         msg: req.body.msg
     }, (err, result) => {
-        if(err) {
+        if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             res.send({ msg: 'Notification sent.' })
@@ -225,29 +229,29 @@ app.post("/notify", (req, res) => {
 
 
 app.post("/getNotifications", (req, res) => {
-    users.findOne({contactNumber: req.body.contactNumber}, (err, result) => {
-        if(err) {
+    users.findOne({ contactNumber: req.body.contactNumber }, (err, result) => {
+        if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             let lastSeenDate = new Date();
             lastSeenDate.setDate(lastSeenDate.getDate() - 1)
             let lastSeenTime = lastSeenDate.getTime()
-            if(result.lastSeen) {
+            if (result.lastSeen) {
                 lastSeenTime = result.lastSeen;
-            } 
-            notifications.find({created_at: { $gte: lastSeenTime}}, (err, result1) => {
-                if(err) {
+            }
+            notifications.find({ created_at: { $gte: lastSeenTime } }, (err, result1) => {
+                if (err) {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
-                    users.updateOne({contactNumber: req.body.contactNumber}, {$set: {lastSeen: (new Date).getTime()}})
+                    users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { lastSeen: (new Date).getTime() } })
                     result1.toArray((error, resultMsg) => {
-                        if(error) {
+                        if (error) {
                             res.status(500).json({ err: "internal server error please try again later." });
                         } else {
-                            res.send({ msgs:  resultMsg});
+                            res.send({ msgs: resultMsg });
                         }
                     })
-                    
+
                 }
             });
         }
@@ -255,33 +259,33 @@ app.post("/getNotifications", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    users.findOne({ contactNumber: req.body.contactNumber }, function (
-        err,
-        result
-    ) {
+    users.findOne({ contactNumber: req.body.contactNumber }, function (err,result) {
         if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
-            if (result) {
-                if (req.body.username && req.body.contactNumber) {
-                    users.updateOne({ contactNumber: req.body.contactNumber },
-                        {
-                            $set: {
-                                username: req.body.username,
-                                isNewUser: false
-                            }
-                        });
+            if (!result) {
+                if (req.body.username && req.body.contactNumber && req.body.password) {
+                    users.insertOne({
+                        username: req.body.username,
+                        contactNumber: req.body.contactNumber,
+                        questionState: 0,
+                        points: 100,
+                        earnedTickets: [],
+                        isNewUser: true,
+                        password: req.body.password
+                    });
                     res.send({
                         questionState: 0,
                         points: 100,
                         contactNumber: req.body.contactNumber,
-                        username: req.body.username
+                        username: req.body.username,
+                        profile: true,
                     });
                 } else {
                     res.status(401).json({ err: "Invalid Data!!" });
                 }
             } else {
-                res.status(400).json({ err: "User Not Found!!" });
+                res.status(400).json({ err: "User Already Exist!!" });
             }
         }
     });
@@ -298,7 +302,7 @@ app.post("/mapTicket", (req, res) => {
                         res.status(500).json({ err: "internal server error please try again later." });
                     } else {
                         const date = req.body.date;
-                        users.updateOne({ contactNumber: req.body.contactNumber }, { $push: { ticketMapping: { ticketNo: req.body.ticket, assignDate: new Date(date[0], date[1]-1, date[2], date[3], date[4], date[5], date[6]) } }, $pull: { earnedTickets: req.body.ticket } }, (err, success) => {
+                        users.updateOne({ contactNumber: req.body.contactNumber }, { $push: { ticketMapping: { ticketNo: req.body.ticket, assignDate: new Date(date[0], date[1] - 1, date[2], date[3], date[4], date[5], date[6]) } }, $pull: { earnedTickets: req.body.ticket } }, (err, success) => {
                             if (err) {
                                 res.status(500).json({ err: "internal server error please try again later." });
                             } else {
@@ -348,7 +352,8 @@ app.post("/questionDetails", (req, res) => {
                         let _images = [];
                         for (var j = 0; j < images.length; j++) {
                             _images.push(
-                                "http://luckydrawapi.dadabhagwan.org" + _path.substr(1) + "/" + images[j]
+                                // "http://luckydrawapi.dadabhagwan.org" + _path.substr(1) + "/" + images[j]
+                                "http://192.168.43.23:3000" + _path.substr(1) + "/" + images[j]
                             );
                         }
                         res.json({
@@ -497,4 +502,5 @@ drawDetails = {
     result: [{ users: [], ranking: "" }]
 }
 
-app.listen(60371, () => console.log("Example app listening on port 60371!"));
+// app.listen(60371, () => console.log("Example app listening on port 60371!"));
+app.listen(3000, () => console.log("Example app listening on port 3000!"));
