@@ -487,15 +487,15 @@ app.post("/generateTicket", (req, res) => {
 
 map = function() {
     if(this.questionState <= 25)
-        emit("qlte25", 1);
+        emit("<25", 1);
     if(this.questionState > 25 && this.questionState <= 50)
-        emit("qlte50", 1);
+        emit("<50", 1);
     if(this.questionState > 50 && this.questionState <= 75)
-       emit("qlte75", 1);
-    if(this.questionState > 75 && this.questionState <= 100)
-       emit("qlte75", 1);
+       emit("<75", 1);
+    if(this.questionState > 75 && this.questionState < 100)
+       emit("<100", 1);
     if(this.questionState >= 100)
-       emit("qlte100", 1);
+       emit("=100", 1);
     emit("userCount", 1)
 }
 
