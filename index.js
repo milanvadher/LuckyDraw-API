@@ -504,8 +504,9 @@ reduce = function(key, values) {
 }
 
 app.post("/statistics", (req, res) => {
-    results = users.mapReduce(map,reduce,{out:{inline:1}})
-    res.send({"stats": results.results})
+    users.mapReduce(map,reduce,{out:{inline:1}}).then( (stats) => {
+        res.send({"stats": stats})
+    });
 });
 
 app.post("/userList", (req, res) => {
