@@ -484,6 +484,30 @@ app.post("/generateTicket", (req, res) => {
     );
 });
 
+
+map = function() {
+    if(this.questionState <= 25)
+        emit("qlte25", 1);
+    if(this.questionState > 25 && this.questionState <= 50)
+        emit("qlte50", 1);
+    if(this.questionState > 50 && this.questionState <= 75)
+       emit("qlte75", 1);
+    if(this.questionState > 75 && this.questionState <= 100)
+       emit("qlte75", 1);
+    if(this.questionState >= 100)
+       emit("qlte100", 1);
+    emit("userCount", 1)
+}
+
+reduce = function(key, values) {
+    return Array.sum(values)
+}
+
+app.post("/statistics", (req, res) => {
+    results = db.users.mapReduce(map,reduce,{out:{inline:1}})
+    res.send({"stats": results.results})
+});
+
 app.post("/userList", (req, res) => {
     if (req.body.contactNumber == "7574852413") {
         users.find({}).toArray((_err, users) => {
