@@ -490,6 +490,7 @@ app.post("/userList", (req, res) => {
             if (_err) {
                 res.send({ err: "Internal server error", _err })
             } else {
+                users.forEach(user => delete.user.password)
                 res.send(users);
             }
         });
