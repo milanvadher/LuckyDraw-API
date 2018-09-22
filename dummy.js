@@ -52,6 +52,94 @@ MongoClient.connect(url, function (err, client) {
     // });
 });
 
+/*test = {
+    draws: [
+        {prize: 1, count: 1},
+        {prize: 2, count: 1},
+        {prize: 3, count: 1}
+    ]
+}
+
+
+map1 = function() {
+    if(this.result.length > 0)
+        this.result.map((k) => {
+            emit("contactNumber", k.contactNumber)    
+        })
+}
+
+reduce1 = function(key, values) {
+    return values.join(",")
+}
+
+db.drawSlots.mapReduce(map1, reduce1, {out :{inline: 1}})
+
+app.post("/generateResult", (req, res) => {
+    let draws = req.body.draws;
+    let date = req.body.date;
+    calculateResult(test.draws, ISODate("2018-11-16T13:00:00Z"), (err, result) => {
+        if(err) {
+            res.send()
+        } else {
+            print(JSON.stringify(result))
+            //res.send({"results" : result})
+        }
+    })
+});
+
+//draws = req.body.draws;
+calculateResult = function(draws, date,  callback) {
+    final_result = []
+    draws.forEach(draw => {
+        k = db.drawSlots.find({"date": date}, {users: 1}).toArray();
+        m = db.drawSlots.mapReduce(map1, reduce1, {out :{inline: 1}});
+        pre_winners = m.results.length > 0 ? m.results[0].value.split(",") : []
+        winners = [];
+                
+        drawSlot_winners = [];
+        print(winners.length, " ", draw.count);
+        while(winners.length < draw.count) {
+            index = Math.ceil(Math.random() * (k[0].users.length))-1;
+            lucky_winner = k[0].users[index];
+            print(pre_winners, " ", lucky_winner.contactNumber);
+            if(pre_winners.indexOf(lucky_winner.contactNumber) < 0) {
+                pre_winners.push(lucky_winner.contactNumber);
+                winners.push(lucky_winner);
+            } else {
+                continue;
+            }
+            drawSlot_winners.push(lucky_winner);
+        }
+        drawSlot_winners.forEach(d_w => {
+            db.drawSlots.updateOne({"date": date}, {$push: {result : {contactNumber: d_w.contactNumber, prize: draw.prize, ticket: d_w.ticket}}})
+            final_result.push({contactNumber: d_w.contactNumber, prize: draw.prize, ticket: d_w.ticket})
+            print(d_w.contactNumber, " ", draw.prize)
+        });   
+    })
+    callback(null, final_result)  
+}
+
+
+k = db.drawSlots.find({"date": ISODate("2018-11-16T14:30:00Z")}, {users: 1}).toArray();
+    draw_slot_winners = db.drawSlots.aggregate(
+        { $group:  {result: {$gt: []}} },
+        { $push: {"cns" : $result.$.contactNumber}}
+        ).toArray();
+winners = [];
+draw_slot_winners.forEach((db_w) => winners.push(db_w.contactNumber));
+drawSlot_winners = [];
+while(winners.length < 3) {
+    index = Math.ceil(Math.random() * (k[0].users.length))-1;
+    lucky_winner = k[0].users[index];
+    if(winners.indexOf(lucky_winner.contactNumber) < 0) {
+        winners.push(lucky_winner.contactNumber);
+    } else {
+        continue;
+    }
+    drawSlot_winners.push(lucky_winner);
+}
+*/
+
 //   var os = require('os');
 // var ifaces = os.networkInterfaces();
 // Object.keys(ifaces).forEach(function (ifname) {
