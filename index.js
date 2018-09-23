@@ -381,7 +381,7 @@ app.post("/questionDetails", (req, res) => {
         } else {
             for (var i = 0; i < items.length; i++) {
                 let data = items[i].split("_");
-                if (parseInt(data[0]) === req.body.questionState + 1) {
+                if (parseInt(data[0]) === parseInt(req.body.questionState) + 1) {
                     let _path = path + items[i];
                     fs.readdir(path + items[i], function (err, images) {
                         let _images = [];
