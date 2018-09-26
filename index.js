@@ -440,6 +440,57 @@ Requires 2 parameters
 app.post("/generateResult", (req, res) => {
     let draws = req.body.draws;
     let date = req.body.date;
+    drawSlots.find({"date": new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6])}, {users: 1}).toArray((err, result) => {
+        if(err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            drawSlots.mapReduce(mapContactNumber, reduce1, {out :{inline: 1}}).then((m) => {
+                pre_winners = m.length > 0 ? m[0].value.split(",") : []
+                winners = [];
+                drawSlot_winners = [];
+                while(winners.length < draw.count) {
+                    if(max_counter <= 0) {
+                        db.drawSlots.updateOne({"date": date}, {$set: {result : []}})
+                    }
+                    index = Math.ceil(Math.random() * (result[0].users.length))-1;
+                    lucky_winner = result[0].users[index];
+                    if(pre_winners.indexOf(lucky_winner.contactNumber) < 0) {
+                        pre_winners.push(lucky_winner.contactNumber);
+                        winners.push(lucky_winner);
+                    } else {
+                        max_counter--;
+                        continue;
+                    }
+                    drawSlot_winners.push(lucky_winner);
+                }
+                let tempCounter = 0;
+                drawSlot_winners.forEach(d_w => {
+                    tempCounter++;
+                    db.drawSlots.updateOne({"date": date}, {$push: {result : {contactNumber: d_w.contactNumber, prize: draw.prize, ticket: d_w.ticket}}}, (err1, res1) => {
+                        final_result.push({contactNumber: d_w.contactNumber, prize: draw.prize, ticket: d_w.ticket})
+                        if(drawSlot_winners.length == tempCounter) {
+                            res.send({"results" : final_result})
+                        }
+                    })
+                });
+            })
+        }
+    });
+    /*calculateResult(draws, new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6]), (err, result) => {
+        if(err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            print(JSON.stringify(result))
+            res.send({"results" : result})
+        }
+    })*/
+});
+
+
+/*
+app.post("/generateResult", (req, res) => {
+    let draws = req.body.draws;
+    let date = req.body.date;
     calculateResult(draws, new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6]), (err, result) => {
         if(err) {
             res.status(500).json({ err: "internal server error please try again later." });
@@ -449,6 +500,7 @@ app.post("/generateResult", (req, res) => {
         }
     })
 });
+*/
 
 //draws = req.body.draws;
 calculateResult = function(draws, date,  callback) {
