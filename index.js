@@ -473,6 +473,8 @@ app.post("/generateResult", (req, res) => {
                         }
                     })
                 });
+            }).catch((err2) => {
+                res.status(500).json({ err: "internal server error please try again later." });
             })
         }
     });
