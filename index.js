@@ -5,8 +5,10 @@ var os = require("os");
 var ifaces = os.networkInterfaces();
 var ip;
 const request = require('request');
+var crypto = require("crypto")
 
 app.use("/questions", express.static("questions"));
+app.use("/ak_questions", express.static("ak_questions"));
 const MongoClient = require("mongodb").MongoClient;
 var bodyParser = require("body-parser");
 var cors = require("cors");
@@ -39,6 +41,7 @@ MongoClient.connect(
         drawSlots = db.collection("drawSlots");
         nextCouponNumber = db.collection("nextCouponNumber");
         notifications = db.collection("notifications");
+        ak_questions = db.collection('ak_questions');
     }
 );
 
@@ -56,6 +59,7 @@ app.post("/login", (req, res) => {
                         points: result.points,
                         contactNumber: result.contactNumber,
                         username: result.username,
+                        ak_ques_st: result.ak_ques_st,
                         profile: true,
                     });
                 } else {
@@ -72,7 +76,7 @@ app.get("/questionState", (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             console.log(result);
-            res.send({ questionState: result.questionState, points: result.points });
+            res.send({ questionState: result.questionState, points: result.points, ak_ques_st: result.ak_ques_st });
         }
     });
 });
@@ -104,13 +108,14 @@ app.post("/saveUserData", (req, res) => {
         if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
-            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { questionState: req.body.questionState, points: req.body.points } }, function (err, _result) {
+            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { questionState: req.body.questionState, points: req.body.points, ak_ques_st: req.body.ak_ques_st } }, function (err, _result) {
                 if (err) {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
                     users.findOne({ contactNumber: req.body.contactNumber }, function (err, user) {
                         res.send({
                             questionState: user.questionState,
+                            ak_ques_st: user.ak_ques_st,
                             points: user.points,
                             contactNumber: user.contactNumber,
                             username: user.username
@@ -141,6 +146,7 @@ app.post("/profileUpdate", (req, res) => {
                         users.findOne({ contactNumber: req.body.contactNumber }, function (err, user) {
                             res.send({
                                 questionState: user.questionState,
+                                ak_ques_st: user.ak_ques_st,
                                 points: user.points,
                                 contactNumber: user.contactNumber,
                                 username: user.username,
@@ -168,6 +174,7 @@ app.post("/otp", (req, res) => {
                     } else {
                         res.send({
                             questionState: result.questionState,
+                            ak_ques_st: result.ak_ques_st,
                             points: result.points,
                             contactNumber: result.contactNumber,
                             username: result.username,
@@ -220,6 +227,7 @@ app.post("/forgotPassword", (req, res) => {
                         users.findOne({ contactNumber: req.body.contactNumber }, function (err, user) {
                             res.send({
                                 questionState: user.questionState,
+                                ak_ques_st: user.ak_ques_st,
                                 points: user.points,
                                 contactNumber: user.contactNumber,
                                 username: user.username,
@@ -248,6 +256,7 @@ app.post("/forgotPassword", (req, res) => {
     });*/
 });
 
+
 app.post("/notify", (req, res) => {
     notifications.insert({
         created_at: (new Date).getTime(),
@@ -261,7 +270,6 @@ app.post("/notify", (req, res) => {
         }
     });
 });
-
 
 app.post("/getNotifications", (req, res) => {
     users.findOne({ contactNumber: req.body.contactNumber }, (err, result) => {
@@ -304,6 +312,7 @@ app.post("/register", (req, res) => {
                         username: req.body.username,
                         contactNumber: req.body.contactNumber,
                         questionState: 0,
+                        ak_ques_st: 0,
                         points: 100,
                         earnedTickets: [],
                         isNewUser: true,
@@ -311,6 +320,7 @@ app.post("/register", (req, res) => {
                     });
                     res.send({
                         questionState: 0,
+                        ak_ques_st: 0,
                         points: 100,
                         contactNumber: req.body.contactNumber,
                         username: req.body.username,
@@ -403,6 +413,38 @@ app.post("/questionDetails", (req, res) => {
     });
 });
 
+
+function encrypt(text){
+  var cipher = crypto.createCipher('aes-256-cbc','dadanirumaswami')
+  var crypted = cipher.update(text,'utf8','hex')
+  crypted += cipher.final('hex');
+  return crypted;
+}
+
+function decrypt(text){
+  var decipher = crypto.createDecipher('aes-256-cbc','dada')
+  var dec = decipher.update(text,'hex','utf8')
+  dec += decipher.final('utf8');
+  return dec;
+}
+
+
+app.post("/ak_questionDetails", (req, res) => {
+    let url = "http://localhost:60731/ak_questions/" + req.body.ak_ques_st + ".jpg";
+    console.log(url);
+    ak_questions.findOne({url: url}, (err, result) => {
+        if(err) {
+
+        } else {
+            let encoded_results = [];
+            for(let i = 0; i < result.answers.length; i++) {
+                encoded_results.push(encrypt(result.answers[i]))
+            }
+            res.send({url: result.url, answers: encoded_results});
+        }
+    })
+});
+
 app.post("/getDrawSlots", (req, res) => {
     drawSlots
         .find({})
@@ -436,7 +478,8 @@ app.post("/generateTicket", (req, res) => {
     users.findOne(
         {
             contactNumber: req.body.contactNumber,
-            questionState: req.body.questionState
+            questionState: req.body.questionState,
+            ak_ques_st: req.body.ak_ques_st,
         },
         function (err, result) {
             if (err) {
@@ -550,6 +593,7 @@ user = {
     password: "",
     contactNumber: "",
     questionState: "",
+    ak_ques_st: "",
     points: "",
     earnedTickets: [],
     totalMappedTicket: "",

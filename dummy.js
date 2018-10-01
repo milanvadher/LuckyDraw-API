@@ -32,6 +32,11 @@ MongoClient.connect(url, function (err, client) {
     //     coupon: 1000
     // });
     
+    const ak_questions = db.collection('ak_questions');
+    ak_questions.insert({
+        url: "http://localhost:60731/ak_questions/1.jpg",
+        answers: ["test", "test1", "test2"]
+    })
 
     // insert slots
     // const drawSlots = db.collection('drawSlots');
