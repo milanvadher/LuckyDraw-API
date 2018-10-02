@@ -423,11 +423,11 @@ app.post("/ak_questionDetails", (req, res) => {
             console.log(result);
             for(let i = 0; i < result.answers.length; i++) {
                 let ans = result.answers[i];
-                encoded_related_words = [];
+                encoded_related_words = [Buffer.from(ans.answer).toString("base64")];
                 for(let v = 0; v < ans.related_words.length; v++) {
                     encoded_related_words.push(Buffer.from(ans.related_words[v]).toString("base64"));
                 }
-                encoded_results.push({"answer": Buffer.from(ans.answer).toString("base64"), "related_words": encoded_related_words});
+                encoded_results.push(encoded_related_words);
             }
             res.send({url: result.url, answers: encoded_results});
         }
