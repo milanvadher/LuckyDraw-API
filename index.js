@@ -413,32 +413,15 @@ app.post("/questionDetails", (req, res) => {
     });
 });
 
-
-function encrypt(text){
-  var cipher = crypto.createCipher('aes-256-cbc','dadanirumaswami')
-  var crypted = cipher.update(text,'utf8','hex')
-  crypted += cipher.final('hex');
-  return crypted;
-}
-
-function decrypt(text){
-  var decipher = crypto.createDecipher('aes-256-cbc','dada')
-  var dec = decipher.update(text,'hex','utf8')
-  dec += decipher.final('utf8');
-  return dec;
-}
-
-
 app.post("/ak_questionDetails", (req, res) => {
     let url = "http://localhost:60731/ak_questions/" + req.body.ak_ques_st + ".jpg";
-    console.log(url);
     ak_questions.findOne({url: url}, (err, result) => {
         if(err) {
-
+            res.status(500).json({ err: "internal server error please try again later." });
         } else {
             let encoded_results = [];
             for(let i = 0; i < result.answers.length; i++) {
-                encoded_results.push(encrypt(result.answers[i]))
+                encoded_results.push(Buffer.from(result.answers[i]).toString("base64"));
             }
             res.send({url: result.url, answers: encoded_results});
         }
