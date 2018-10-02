@@ -486,7 +486,7 @@ app.post("/generateTicket", (req, res) => {
 
 
 map = function() {
-    if(this.questionState <= 25)
+    if(this.questionState <= 25 && this.questionState > 0)
         emit("<25", 1);
     if(this.questionState > 25 && this.questionState <= 50)
         emit("<50", 1);
@@ -496,6 +496,8 @@ map = function() {
        emit("<100", 1);
     if(this.questionState >= 100)
        emit("=100", 1);
+    if(this.questionState == 0)
+        emit("=0", 1);
     emit("userCount", 1)
 }
 
