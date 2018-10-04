@@ -104,11 +104,12 @@ app.post("/ticketDetails", (req, res) => {
 });
 
 app.post("/saveUserData", (req, res) => {
+    let temp_ak_ques_st = req.body.ak_ques_st ? req.body.ak_ques_st : 0
     users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
         if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
-            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { questionState: req.body.questionState, points: req.body.points, ak_ques_st: req.body.ak_ques_st } }, function (err, _result) {
+            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { questionState: req.body.questionState, points: req.body.points, ak_ques_st: temp_ak_ques_st } }, function (err, _result) {
                 if (err) {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
@@ -467,8 +468,7 @@ app.post("/generateTicket", (req, res) => {
     users.findOne(
         {
             contactNumber: req.body.contactNumber,
-            questionState: req.body.questionState,
-            ak_ques_st: req.body.ak_ques_st,
+            questionState: req.body.questionState
         },
         function (err, result) {
             if (err) {
@@ -492,17 +492,6 @@ app.post("/generateTicket", (req, res) => {
                                             { $inc: { coupon: 1 } }
                                         );
                                         res.send({ msg: "You have got Ticket " + dbRes.coupon });
-                                        // send sms to user
-                                        /*console.log('Hello, suprise ****', req.body.contactNumber, dbRes.coupon)
-                                        // request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon : ' + dbRes.coupon + '.', { json: true }, (err, otp, body) => {
-                                        request("http://api.msg91.com/api/sendhttp.php?country=91&sender=MSGIND&route=4&mobiles=+91" + req.body.contactNumber + "&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon :" + dbRes.coupon + ".", { json: true }, (err, otp, body) => {
-                                            if (err) {
-                                                console.log(err);
-                                                res.status(500).json({ err: "internal server error please try again later." });
-                                            } else {
-                                                res.send({ msg: "You have got Ticket " + dbRes.coupon });
-                                            }
-                                        });*/
                                     }
                                 }
                             );
@@ -516,6 +505,47 @@ app.post("/generateTicket", (req, res) => {
     );
 });
 
+
+app.post("/generateTicketForAK", (req, res) => {
+    users.findOne(
+        {
+            contactNumber: req.body.contactNumber,
+            ak_ques_st: req.body.ak_ques_st
+        },
+        function (err, result) {
+            if (err) {
+                res.status(500).json({ err: "internal server error please try again later." });
+            } else {
+                if (result) {
+                    nextCouponNumber.findOne({}, function (err, dbRes) {
+                        if (err) {
+                            console.log("findone", err);
+                        } else {
+                            users.updateOne(
+                                { contactNumber: req.body.contactNumber },
+                                { $push: { earnedTickets: dbRes.coupon } },
+                                { upsert: true },
+                                function (err, _result) {
+                                    if (err) {
+                                        res.send({ msg: err });
+                                    } else {
+                                        nextCouponNumber.updateOne(
+                                            { coupon: dbRes.coupon },
+                                            { $inc: { coupon: 1 } }
+                                        );
+                                        res.send({ msg: "You have got Ticket " + dbRes.coupon });
+                                    }
+                                }
+                            );
+                        }
+                    });
+                } else {
+                    res.status(400).json({ err: "User not found!!" });
+                }
+            }
+        }
+    );
+});
 
 map = function() {
     if(this.questionState <= 25)
