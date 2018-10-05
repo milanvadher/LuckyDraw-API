@@ -5,8 +5,10 @@ var os = require("os");
 var ifaces = os.networkInterfaces();
 var ip;
 const request = require('request');
+var crypto = require("crypto")
 
 app.use("/questions", express.static("questions"));
+app.use("/ak_questions", express.static("ak_questions"));
 const MongoClient = require("mongodb").MongoClient;
 var bodyParser = require("body-parser");
 var cors = require("cors");
@@ -39,6 +41,7 @@ MongoClient.connect(
         drawSlots = db.collection("drawSlots");
         nextCouponNumber = db.collection("nextCouponNumber");
         notifications = db.collection("notifications");
+        ak_questions = db.collection('ak_questions');
     }
 );
 
@@ -56,6 +59,7 @@ app.post("/login", (req, res) => {
                         points: result.points,
                         contactNumber: result.contactNumber,
                         username: result.username,
+                        ak_ques_st: result.ak_ques_st,
                         profile: true,
                     });
                 } else {
@@ -72,7 +76,7 @@ app.get("/questionState", (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             console.log(result);
-            res.send({ questionState: result.questionState, points: result.points });
+            res.send({ questionState: result.questionState, points: result.points, ak_ques_st: result.ak_ques_st });
         }
     });
 });
@@ -100,17 +104,19 @@ app.post("/ticketDetails", (req, res) => {
 });
 
 app.post("/saveUserData", (req, res) => {
+    let temp_ak_ques_st = req.body.ak_ques_st ? req.body.ak_ques_st : 1
     users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
         if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
-            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { questionState: req.body.questionState, points: req.body.points } }, function (err, _result) {
+            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { questionState: req.body.questionState, points: req.body.points, ak_ques_st: temp_ak_ques_st } }, function (err, _result) {
                 if (err) {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
                     users.findOne({ contactNumber: req.body.contactNumber }, function (err, user) {
                         res.send({
                             questionState: user.questionState,
+                            ak_ques_st: user.ak_ques_st,
                             points: user.points,
                             contactNumber: user.contactNumber,
                             username: user.username
@@ -141,6 +147,7 @@ app.post("/profileUpdate", (req, res) => {
                         users.findOne({ contactNumber: req.body.contactNumber }, function (err, user) {
                             res.send({
                                 questionState: user.questionState,
+                                ak_ques_st: user.ak_ques_st,
                                 points: user.points,
                                 contactNumber: user.contactNumber,
                                 username: user.username,
@@ -168,6 +175,7 @@ app.post("/otp", (req, res) => {
                     } else {
                         res.send({
                             questionState: result.questionState,
+                            ak_ques_st: result.ak_ques_st,
                             points: result.points,
                             contactNumber: result.contactNumber,
                             username: result.username,
@@ -220,6 +228,7 @@ app.post("/forgotPassword", (req, res) => {
                         users.findOne({ contactNumber: req.body.contactNumber }, function (err, user) {
                             res.send({
                                 questionState: user.questionState,
+                                ak_ques_st: user.ak_ques_st,
                                 points: user.points,
                                 contactNumber: user.contactNumber,
                                 username: user.username,
@@ -248,6 +257,7 @@ app.post("/forgotPassword", (req, res) => {
     });*/
 });
 
+
 app.post("/notify", (req, res) => {
     notifications.insert({
         created_at: (new Date).getTime(),
@@ -261,7 +271,6 @@ app.post("/notify", (req, res) => {
         }
     });
 });
-
 
 app.post("/getNotifications", (req, res) => {
     users.findOne({ contactNumber: req.body.contactNumber }, (err, result) => {
@@ -304,6 +313,7 @@ app.post("/register", (req, res) => {
                         username: req.body.username,
                         contactNumber: req.body.contactNumber,
                         questionState: 0,
+                        ak_ques_st: 1,
                         points: 100,
                         earnedTickets: [],
                         isNewUser: true,
@@ -311,6 +321,7 @@ app.post("/register", (req, res) => {
                     });
                     res.send({
                         questionState: 0,
+                        ak_ques_st: 1,
                         points: 100,
                         contactNumber: req.body.contactNumber,
                         username: req.body.username,
@@ -365,7 +376,7 @@ app.post("/getUserTickets", (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             if (_user) {
-                res.send({ earnedTickets: _user.earnedTickets, ticketMapping: _user.ticketMapping })
+                res.send({ earnedTickets: _user.earnedTickets, ticketMapping: _user.ticketMapping, new_game: false })
             } else {
                 res.status(400).json({ err: "No user Found!!" });
             }
@@ -401,6 +412,27 @@ app.post("/questionDetails", (req, res) => {
             }
         }
     });
+});
+
+app.post("/ak_questionDetails", (req, res) => {
+    let url = "http://luckydrawapi.dadabhagwan.org:60371/ak_questions/" + req.body.ak_ques_st + ".JPG";
+    ak_questions.findOne({url: url}, (err, result) => {
+        if(err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            let encoded_results = [];
+            console.log(result);
+            for(let i = 0; i < result.answers.length; i++) {
+                let ans = result.answers[i];
+                encoded_related_words = [Buffer.from(ans.answer).toString("base64")];
+                for(let v = 0; v < ans.related_words.length; v++) {
+                    encoded_related_words.push(Buffer.from(ans.related_words[v]).toString("base64"));
+                }
+                encoded_results.push(encoded_related_words);
+            }
+            res.send({url: result.url, answers: encoded_results});
+        }
+    })
 });
 
 app.post("/getDrawSlots", (req, res) => {
@@ -460,17 +492,6 @@ app.post("/generateTicket", (req, res) => {
                                             { $inc: { coupon: 1 } }
                                         );
                                         res.send({ msg: "You have got Ticket " + dbRes.coupon });
-                                        // send sms to user
-                                        /*console.log('Hello, suprise ****', req.body.contactNumber, dbRes.coupon)
-                                        // request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=+' + req.body.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon : ' + dbRes.coupon + '.', { json: true }, (err, otp, body) => {
-                                        request("http://api.msg91.com/api/sendhttp.php?country=91&sender=MSGIND&route=4&mobiles=+91" + req.body.contactNumber + "&authkey=192315AnTq0Se1Q5a54abb2&message=Congratulation! You earned a new Lucky Draw Coupon :" + dbRes.coupon + ".", { json: true }, (err, otp, body) => {
-                                            if (err) {
-                                                console.log(err);
-                                                res.status(500).json({ err: "internal server error please try again later." });
-                                            } else {
-                                                res.send({ msg: "You have got Ticket " + dbRes.coupon });
-                                            }
-                                        });*/
                                     }
                                 }
                             );
@@ -484,6 +505,47 @@ app.post("/generateTicket", (req, res) => {
     );
 });
 
+
+app.post("/generateTicketForAK", (req, res) => {
+    users.findOne(
+        {
+            contactNumber: req.body.contactNumber,
+            ak_ques_st: req.body.ak_ques_st
+        },
+        function (err, result) {
+            if (err) {
+                res.status(500).json({ err: "internal server error please try again later." });
+            } else {
+                if (result) {
+                    nextCouponNumber.findOne({}, function (err, dbRes) {
+                        if (err) {
+                            console.log("findone", err);
+                        } else {
+                            users.updateOne(
+                                { contactNumber: req.body.contactNumber },
+                                { $push: { earnedTickets: dbRes.coupon } },
+                                { upsert: true },
+                                function (err, _result) {
+                                    if (err) {
+                                        res.send({ msg: err });
+                                    } else {
+                                        nextCouponNumber.updateOne(
+                                            { coupon: dbRes.coupon },
+                                            { $inc: { coupon: 1 } }
+                                        );
+                                        res.send({ msg: "You have got Ticket " + dbRes.coupon });
+                                    }
+                                }
+                            );
+                        }
+                    });
+                } else {
+                    res.status(400).json({ err: "User not found!!" });
+                }
+            }
+        }
+    );
+});
 
 map = function() {
     if(this.questionState <= 25 && this.questionState > 0)
@@ -552,6 +614,7 @@ user = {
     password: "",
     contactNumber: "",
     questionState: "",
+    ak_ques_st: "",
     points: "",
     earnedTickets: [],
     totalMappedTicket: "",
