@@ -104,7 +104,7 @@ app.post("/ticketDetails", (req, res) => {
 });
 
 app.post("/saveUserData", (req, res) => {
-    let temp_ak_ques_st = req.body.ak_ques_st ? req.body.ak_ques_st : 0
+    let temp_ak_ques_st = req.body.ak_ques_st ? req.body.ak_ques_st : 1
     users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
         if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
@@ -313,7 +313,7 @@ app.post("/register", (req, res) => {
                         username: req.body.username,
                         contactNumber: req.body.contactNumber,
                         questionState: 0,
-                        ak_ques_st: 0,
+                        ak_ques_st: 1,
                         points: 100,
                         earnedTickets: [],
                         isNewUser: true,
@@ -321,7 +321,7 @@ app.post("/register", (req, res) => {
                     });
                     res.send({
                         questionState: 0,
-                        ak_ques_st: 0,
+                        ak_ques_st: 1,
                         points: 100,
                         contactNumber: req.body.contactNumber,
                         username: req.body.username,
@@ -415,7 +415,7 @@ app.post("/questionDetails", (req, res) => {
 });
 
 app.post("/ak_questionDetails", (req, res) => {
-    let url = "http://localhost:60371/ak_questions/" + req.body.ak_ques_st + ".jpg";
+    let url = "http://luckydrawapi.dadabhagwan.org:60371/ak_questions/" + req.body.ak_ques_st + ".JPG";
     ak_questions.findOne({url: url}, (err, result) => {
         if(err) {
             res.status(500).json({ err: "internal server error please try again later." });

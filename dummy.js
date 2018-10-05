@@ -36,7 +36,7 @@ MongoClient.connect(url, function (err, client) {
     ak_questions.insertMany(
         [
             {
-                "url": "http://localhost:60371/ak_questionDetails/1.jpg",
+                "url": "http://luckydrawapi.dadabhagwan.org:60371/ak_questionDetails/1.JPG",
                 "answers": [
                 {
                     "answer": "Fight",
@@ -161,7 +161,7 @@ MongoClient.connect(url, function (err, client) {
                 ]
             },
             {
-                "url": "http://localhost:60371/ak_questionDetails/2.jpg",
+                "url": "http://luckydrawapi.dadabhagwan.org:60371/ak_questionDetails/2.JPG",
                 "answers": [
                 {
                     "answer": "Fight",
@@ -261,7 +261,7 @@ MongoClient.connect(url, function (err, client) {
                 ]
             },
             {
-                "url": "http://localhost:60371/ak_questionDetails/3.jpg",
+                "url": "http://luckydrawapi.dadabhagwan.org:60371/ak_questionDetails/3.JPG",
                 "answers": [
                 {
                     "answer": "Love",
@@ -378,7 +378,7 @@ MongoClient.connect(url, function (err, client) {
                 ]
             },
             {
-                "url": "http://localhost:60371/ak_questionDetails/4.jpg",
+                "url": "http://luckydrawapi.dadabhagwan.org:60371/ak_questionDetails/4.JPG",
                 "answers": [
                 {
                     "answer": "Pictures",
@@ -500,7 +500,7 @@ MongoClient.connect(url, function (err, client) {
                 ]
             },
             {
-                "url": "http://localhost:60371/ak_questionDetails/5.jpg",
+                "url": "http://luckydrawapi.dadabhagwan.org:60371/ak_questionDetails/5.JPG",
                 "answers": [
                 {
                     "answer": "Pride",
@@ -605,7 +605,7 @@ MongoClient.connect(url, function (err, client) {
                 ]
             },
             {
-                "url": "http://localhost:60371/ak_questionDetails/6.jpg",
+                "url": "http://luckydrawapi.dadabhagwan.org:60371/ak_questionDetails/6.JPG",
                 "answers": [
                 {
                     "answer": "Brain",
@@ -704,7 +704,7 @@ MongoClient.connect(url, function (err, client) {
                 ]
             },
             {
-                "url": "http://localhost:60371/ak_questionDetails/7.jpg",
+                "url": "http://luckydrawapi.dadabhagwan.org:60371/ak_questionDetails/7.JPG",
                 "answers": [
                 {
                     "answer": "Goddess",
@@ -791,7 +791,7 @@ MongoClient.connect(url, function (err, client) {
                 ]
             },
             {
-                "url": "http://localhost:60371/ak_questionDetails/8.jpg",
+                "url": "http://luckydrawapi.dadabhagwan.org:60371/ak_questionDetails/8.JPG",
                 "answers": [
                 {
                     "answer": "Cigarette",
@@ -879,7 +879,7 @@ MongoClient.connect(url, function (err, client) {
                 ]
             },
             {
-                "url": "http://localhost:60371/ak_questionDetails/9.jpg",
+                "url": "http://luckydrawapi.dadabhagwan.org:60371/ak_questionDetails/9.JPG",
                 "answers": [
                 {
                     "answer": "+",
