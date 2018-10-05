@@ -376,7 +376,7 @@ app.post("/getUserTickets", (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             if (_user) {
-                res.send({ earnedTickets: _user.earnedTickets, ticketMapping: _user.ticketMapping })
+                res.send({ earnedTickets: _user.earnedTickets, ticketMapping: _user.ticketMapping, new_game: false })
             } else {
                 res.status(400).json({ err: "No user Found!!" });
             }
