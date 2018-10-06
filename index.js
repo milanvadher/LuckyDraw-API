@@ -609,6 +609,20 @@ app.get("/test", (req, res) => {
     res.send({ test: "its working check your code first....." });
 });
 
+app.post("/sos", (req, res) => {
+    if(req.body.name && req.body.number && req.body.center) {
+        let message = "Jsca ! Please help me. " + req.body.name + " from " + req.body.center + " Mo: " + req.body.number;
+        request('http://api.msg91.com/api/sendhttp.php?country=91&sender=MBASOS&route=4&mobiles=8153922317&authkey=192315AnTq0Se1Q5a54abb2&message=' + message, { json: true }, (err, otp, body) => {
+            if (err) {
+                console.log(err);
+                res.status(500).json({ err: "internal server error please try again later." });
+            } else {
+                res.status(200).json({"result": "Message sent"});
+            }
+        });
+    }
+});
+
 user = {
     username: "",
     password: "",
