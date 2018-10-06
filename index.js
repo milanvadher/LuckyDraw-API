@@ -415,7 +415,7 @@ app.post("/questionDetails", (req, res) => {
 });
 
 app.post("/ak_questionDetails", (req, res) => {
-    let url = "http://luckydrawapi.dadabhagwan.org:60371/ak_questions/" + req.body.ak_ques_st + ".JPG";
+    let url = "http://luckydrawapi.dadabhagwan.org/ak_questions/" + req.body.ak_ques_st + ".JPG";
     ak_questions.findOne({url: url}, (err, result) => {
         if(err) {
             res.status(500).json({ err: "internal server error please try again later." });
