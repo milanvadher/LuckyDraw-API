@@ -454,7 +454,7 @@ app.post("/save_user_answers", (req, res) => {
         } else {
             if(result) {
                 user_ak_answers.updateOne({"contactNumber": req.body.contactNumber, "ak_ques_st": req.body.ak_ques_st}, 
-                {$push: {"answers": req.body.answer}}, { upsert: true }, (error, result1) => {
+                {$set: {"answers": req.body.answer}}, { upsert: true }, (error, result1) => {
                     if(error) {
                         res.status(500).json({ err: "internal server error please try again later." });
                     } else {
@@ -464,7 +464,7 @@ app.post("/save_user_answers", (req, res) => {
             } else {
                 user_ak_answers.insertOne({"contactNumber": req.body.contactNumber,
                                            "ak_ques_st": req.body.ak_ques_st,
-                                           "answers": [req.body.answer]}, (error, result1) => {
+                                           "answers": req.body.answer}, (error, result1) => {
                     if(error) {
                         res.status(500).json({ err: "internal server error please try again later." });
                     } else {
@@ -476,6 +476,30 @@ app.post("/save_user_answers", (req, res) => {
     });
 });
 
+
+app.post("/getAKUserState", (req, res) => {
+    final_result = [];
+    ak_questions.aggregate([{"$project": {"_id": "$url", "total":{$size: "$answers"}}}]).toArray((error, result) => {
+        user_ak_answers.find({"contactNumber": req.body.contactNumber})
+                   .toArray((error, result1) => {
+                        for(let uaa = 0; uaa < result.length; uaa++) {
+                            let temp_url = result[uaa]._id;
+                            //let answerCount = result1[uaa].answers.length;
+                            for(let i = 0; i < result1.length; i++) {
+                                if(temp_url == "http://luckydrawapi.dadabhagwan.org/ak_questions/" + result1[i].ak_ques_st + ".JPG") {
+                                    final_result.push({"ak_ques_st": result1[i].ak_ques_st, "total": result[i].total, "answered": result1[i].answers.length});
+                                    break;
+                                }
+                                if(i == (result1.length-1)) {
+                                    let ak_ques_st = temp_url.replace("http://luckydrawapi.dadabhagwan.org/ak_questions/", "").replace(".JPG", "");
+                                    final_result.push({"ak_ques_st": ak_ques_st, "total": result[i].total, "answered": 0});
+                                }
+                            }
+                        }
+                        res.send({"result_stats": final_result});
+                   });
+    });
+});
 
 app.post("/getDrawSlots", (req, res) => {
     drawSlots
