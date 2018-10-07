@@ -42,6 +42,7 @@ MongoClient.connect(
         nextCouponNumber = db.collection("nextCouponNumber");
         notifications = db.collection("notifications");
         ak_questions = db.collection('ak_questions');
+        user_ak_answers = db.collection('user_ak_answers');
     }
 );
 
@@ -430,10 +431,51 @@ app.post("/ak_questionDetails", (req, res) => {
                 }
                 encoded_results.push(encoded_related_words);
             }
-            res.send({url: result.url, answers: encoded_results});
+            user_ak_answers.findOne({"ak_ques_st": req.body.ak_ques_st, "contactNumber": req.body.contactNumber}, (error, result1) => {
+                if(error) {
+                    res.status(500).json({ err: "internal server error please try again later." });
+                } else {
+                    if(result1) {
+                        res.send({url: result.url, answers: encoded_results, answered: result1.answers});
+                    } else {
+                        res.send({url: result.url, answers: encoded_results, answered: []});
+                    }
+                }
+            });
+            
         }
     })
 });
+
+app.post("/save_user_answers", (req, res) => {
+    user_ak_answers.findOne({"contactNumber": req.body.contactNumber, "ak_ques_st": req.body.ak_ques_st}, (err, result) => {
+        if(err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            if(result) {
+                user_ak_answers.updateOne({"contactNumber": req.body.contactNumber, "ak_ques_st": req.body.ak_ques_st}, 
+                {$push: {"answers": req.body.answer}}, { upsert: true }, (error, result1) => {
+                    if(error) {
+                        res.status(500).json({ err: "internal server error please try again later." });
+                    } else {
+                        res.status(200).json({"msg": "State saved"});
+                    }
+                })
+            } else {
+                user_ak_answers.insertOne({"contactNumber": req.body.contactNumber,
+                                           "ak_ques_st": req.body.ak_ques_st,
+                                           "answers": [req.body.answer]}, (error, result1) => {
+                    if(error) {
+                        res.status(500).json({ err: "internal server error please try again later." });
+                    } else {
+                        res.status(200).json({"msg": "State saved"});
+                    }
+                });
+            }
+        }
+    });
+});
+
 
 app.post("/getDrawSlots", (req, res) => {
     drawSlots
