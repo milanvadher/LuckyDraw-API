@@ -422,10 +422,12 @@ app.post("/ak_questionDetails", (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             let encoded_results = [];
+            let weights = []
             console.log(result);
             for(let i = 0; i < result.answers.length; i++) {
                 let ans = result.answers[i];
                 encoded_related_words = [Buffer.from(ans.answer).toString("base64")];
+                weights.push(ans.weight)
                 for(let v = 0; v < ans.related_words.length; v++) {
                     encoded_related_words.push(Buffer.from(ans.related_words[v]).toString("base64"));
                 }
@@ -436,9 +438,9 @@ app.post("/ak_questionDetails", (req, res) => {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
                     if(result1) {
-                        res.send({url: result.url, answers: encoded_results, answered: result1.answers});
+                        res.send({url: result.url, answers: encoded_results, answered: result1.answers, weight: weights});
                     } else {
-                        res.send({url: result.url, answers: encoded_results, answered: []});
+                        res.send({url: result.url, answers: encoded_results, answered: [], weight: weights});
                     }
                 }
             });
