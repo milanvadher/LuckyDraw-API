@@ -36,1042 +36,789 @@ MongoClient.connect(url, function (err, client) {
     ak_questions.insertMany(
         [
   {
-    u'url': u'http://luckydrawapi.dadabhagwan.org/ak_questions/1.JPG',
-    u'answers': [
+    'url': 'http://luckydrawapi.dadabhagwan.org/ak_questions/1.JPG',
+    'answers': [
       {
-        u'answer': u'Fight',
-        u'related_words': [
-          u'not talking',
-          u'fighting'
+        'answer': 'Fight',
+        'related_words': [
+          'not talking',
+          'fighting'
+        ],
+        'weight': 10
+      },
+      {
+        'answer': 'Angry',
+        'related_words': [
+          'anger',
+          'sad'
+        ],
+        'weight': 20
+      },
+      {
+        'answer': 'Irritation',
+        'related_words': [
+          'frustration',
+          'pissed off'
+        ],
+        'weight': 30
+      },
+      {
+        'answer': 'Window',
+        'related_words': [
+          'frame',
+          'glass'
+        ],
+        'weight': 10
+      },
+      {
+        'answer': 'Disagree',
+        'related_words': [
+          'disagreement',
+          'misunderstanding'
+        ],
+        'weight': 5
+      },
+      {
+        'answer': 'Girls',
+        'related_words': [
+          'girl',
+          'gender',
+          'female'
+        ],
+        'weight': 5
+      },
+      {
+        'answer': 'Youth',
+        'related_words': [
+          'teenage'
+        ],
+        'weight': 10
+      },
+      {
+        'answer': 'Magazine',
+        'related_words': [
+          'month',
+          'year',
+          'price',
+          'cost',
+          'amount',
+          'rupees',
+          'logo',
+          'language'
+        ],
+        'weight': 5
+      },
+      {
+        'answer': 'Friends',
+        'related_words': [
+          'friendship',
+          'relation',
+          'sisters'
+        ],
+        'weight': 4
+      },
+      {
+        'answer': 'Enemies',
+        'related_words': [
+          'relation'
+        ],
+        'weight': 1
+      }
+    ]
+  },
+  {
+    'url': 'http://luckydrawapi.dadabhagwan.org/ak_questions/2.JPG',
+    'answers': [
+      {
+        'answer': 'Fight',
+        'related_words': [
+          'not talking',
+          'fighting'
+        ],
+        'weight': 10
+      },
+      {
+        'answer': 'Anger',
+        'related_words': [
+          'angry',
+          'sad'
+        ],
+        'weight': 10
+      },
+      {
+        'answer': 'Frustration',
+        'related_words': [
+          'irritation',
+          'pissed off'
+        ],
+        'weight': 44
+      },
+      {
+        'answer': 'Animal',
+        'related_words': [
+          'Lion',
+          'Lioness',
+          'cat family',
+          'cat',
+          'cats'
+        ],
+        'weight': 8
+      },
+      {
+        'answer': 'Jungle',
+        'related_words': [
+          'forest'
+        ],
+        'weight': 4
+      },
+      {
+        'answer': 'Roar',
+        'related_words': [
+          'shout',
+          'howl',
+          'express',
+          'expression'
+        ],
+        'weight': 8
+      },
+      {
+        'answer': 'Violent',
+        'related_words': [
+          'violence'
+        ],
+        'weight': 1
+      },
+      {
+        'answer': 'Teeth',
+        'related_words': [
+          'tooth',
+          'jaws',
+          'jaw'
+        ],
+        'weight': 5
+      },
+      {
+        'answer': 'Face',
+        'related_words': [
+          'faces'
+        ],
+        'weight': 5
+      },
+      {
+        'answer': 'Whiskers',
+        'related_words': [
+          'hair'
+        ],
+        'weight': 5
+      }
+    ]
+  },
+  {
+    'url': 'http://luckydrawapi.dadabhagwan.org/ak_questions/3.JPG',
+    'answers': [
+      {
+        'answer': 'Love',
+        'related_words': [
+          'loves',
+          'care',
+          'cares',
+          'affection'
+        ],
+        'weight': 16
+      },
+      {
+        'answer': 'White',
+        'related_words': [
+          'color',
+          'green',
+          'purple'
+        ],
+        'weight': 16
+      },
+      {
+        'answer': 'Smile',
+        'related_words': [
+          'smiles',
+          'happy'
+        ],
+        'weight': 16
+      },
+      {
+        'answer': 'Pillow',
+        'related_words': [
+          'cushion'
         ],
         'weight': 6
       },
       {
-        u'answer': u'Angry',
-        u'related_words': [
-          u'anger',
-          u'sad'
+        'answer': 'Sofa',
+        'related_words': [
+          'chair',
+          'couch'
+        ],
+        'weight': 16
+      },
+      {
+        'answer': 'Mother',
+        'related_words': [
+          'mom',
+          'maa'
         ],
         'weight': 6
       },
       {
-        u'answer': u'Irritation',
-        u'related_words': [
-          u'frustration',
-          u'pissed off'
+        'answer': 'Saree',
+        'related_words': [
+          'clothes',
+          'dress'
         ],
         'weight': 6
       },
       {
-        u'answer': u'Window',
-        u'related_words': [
-          u'frame',
-          u'glass'
+        'answer': 'Gnani',
+        'related_words': [
+          'spiritual leader',
+          'leader',
+          'teacher',
+          'gur'
         ],
         'weight': 6
       },
       {
-        u'answer': u'Color',
-        u'related_words': [
-          u'green',
-          u'yellow',
-          u'white',
-          u'brown'
+        'answer': 'Pure',
+        'related_words': [
+          'purity'
         ],
         'weight': 6
       },
       {
-        u'answer': u'Disagree',
-        u'related_words': [
-          u'disagreement',
-          u'misunderstanding'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Pattern',
-        u'related_words': [
-          u'design'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Girls',
-        u'related_words': [
-          u'girl',
-          u'gender',
-          u'female'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Youth',
-        u'related_words': [
-          u'teenage'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Magazine',
-        u'related_words': [
-          u'month',
-          u'year',
-          u'price',
-          u'cost',
-          u'amount',
-          u'rupees',
-          u'logo',
-          u'language'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Shadow',
-        u'related_words': [
-          u'silhouette'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Nature Trees',
-        u'related_words': [
-          u'sky',
-          u'water',
-          u'daylight',
-          u'day'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Numbers',
-        u'related_words': [
-          u'two',
-          u'twelve'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Standing',
-        u'related_words': [
-          u'body posture',
-          u'folded hands'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Friends',
-        u'related_words': [
-          u'friendship',
-          u'relation',
-          u'sisters'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Enemies',
-        u'related_words': [
-          u'relation'
+        'answer': 'Noble',
+        'related_words': [
+          'nobility'
         ],
         'weight': 6
       }
     ]
   },
   {
-    u'url': u'http://luckydrawapi.dadabhagwan.org/ak_questions/2.JPG',
-    u'answers': [
+    'url': 'http://luckydrawapi.dadabhagwan.org/ak_questions/4.JPG',
+    'answers': [
       {
-        u'answer': u'Fight',
-        u'related_words': [
-          u'not talking',
-          u'fighting'
+        'answer': 'Freedom',
+        'related_words': [
+          'liberty'
         ],
-        'weight': 8
+        'weight': 10
       },
       {
-        u'answer': u'Anger',
-        u'related_words': [
-          u'angry',
-          u'sad'
+        'answer': 'Peace',
+        'related_words': [
+          'calm'
         ],
-        'weight': 8
+        'weight': 20
       },
       {
-        u'answer': u'Frustration',
-        u'related_words': [
-          u'irritation',
-          u'pissed off'
+        'answer': 'Enjoy',
+        'related_words': [
+          'happy',
+          'happiness',
+          'pleasure'
         ],
-        'weight': 8
+        'weight': 30
       },
       {
-        u'answer': u'Effect',
-        u'related_words': [
-          u'effects',
-          u'mirror effect',
-          u'blur effect',
-          u'blur',
-          u'focus'
+        'answer': 'Pose',
+        'related_words': [
+          'statue'
         ],
-        'weight': 8
+        'weight': 10
       },
       {
-        u'answer': u'Animal',
-        u'related_words': [
-          u'Lion',
-          u'Lioness',
-          u'cat family',
-          u'cat',
-          u'cats'
+        'answer': 'Family',
+        'related_words': [
+          'friends',
+          'mother',
+          'father',
+          'mom',
+          'dad',
+          'children',
+          'kids'
         ],
-        'weight': 8
+        'weight': 5
       },
       {
-        u'answer': u'Jungle',
-        u'related_words': [
-          u'forest'
+        'answer': 'Krishna',
+        'related_words': [
+          'god',
+          'lord'
         ],
-        'weight': 8
+        'weight': 5
       },
       {
-        u'answer': u'Roar',
-        u'related_words': [
-          u'shout',
-          u'howl',
-          u'express',
-          u'expression'
+        'answer': 'Food',
+        'related_words': [
+          'dishes',
+          'fruits',
+          'fruit',
+          'dish'
         ],
-        'weight': 8
+        'weight': 10
       },
       {
-        u'answer': u'Language',
-        u'related_words': [
-          u'magazine',
-          u'month',
-          u'year',
-          u'price',
-          u'cost',
-          u'amount',
-          u'rupees',
-          u'logo'
+        'answer': 'Shoes',
+        'related_words': [
+          'belt',
+          'wallet',
+          'shades',
+          'goggles',
+          'accessories'
         ],
-        'weight': 8
+        'weight': 5
       },
       {
-        u'answer': u'Violent',
-        u'related_words': [
-          u'violence'
+        'answer': 'Book',
+        'related_words': [
+          'books',
+          'knowledge',
+          'gnan'
         ],
-        'weight': 8
+        'weight': 4
       },
       {
-        u'answer': u'Teeth',
-        u'related_words': [
-          u'tooth',
-          u'jaws',
-          u'jaw'
+        'answer': 'Sunset',
+        'related_words': [
+          'sun',
+          'light',
+          'day'
         ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Face',
-        u'related_words': [
-          u'faces'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Whiskers',
-        u'related_words': [
-          u'hair'
-        ],
-        'weight': 8
+        'weight': 1
       }
     ]
   },
   {
-    u'url': u'http://luckydrawapi.dadabhagwan.org/ak_questions/3.JPG',
-    u'answers': [
+    'url': 'http://luckydrawapi.dadabhagwan.org/ak_questions/5.JPG',
+    'answers': [
       {
-        u'answer': u'Love',
-        u'related_words': [
-          u'loves',
-          u'care',
-          u'cares',
-          u'affection'
+        'answer': 'Pride',
+        'related_words': [
+          'proud'
+        ],
+        'weight': 10
+      },
+      {
+        'answer': 'Rude',
+        'related_words': [
+          'arrogance'
+        ],
+        'weight': 44
+      },
+      {
+        'answer': 'Suffer',
+        'related_words': [
+          'suffering',
+          'guilt'
+        ],
+        'weight': 10
+      },
+      {
+        'answer': 'Arrows',
+        'related_words': [
+          'arrow'
+        ],
+        'weight': 8
+      },
+      {
+        'answer': 'Thermometer',
+        'related_words': [
+          'manometer',
+          'temperature'
+        ],
+        'weight': 4
+      },
+      {
+        'answer': 'Temple',
+        'related_words': [
+          'mandir',
+          'trimandir'
+        ],
+        'weight': 8
+      },
+      {
+        'answer': 'Flags',
+        'related_words': [
+          'dhaja'
+        ],
+        'weight': 1
+      },
+      {
+        'answer': 'Ego',
+        'related_words': [
+          'attitude'
+        ],
+        'weight': 5
+      },
+      {
+        'answer': 'Yuva',
+        'related_words': [
+          'youth',
+          'teenage'
+        ],
+        'weight': 5
+      },
+      {
+        'answer': 'Shapes',
+        'related_words': [
+          'triangle',
+          'square',
+          'rectangle'
+        ],
+        'weight': 5
+      }
+    ]
+  },
+  {
+    'url': 'http://luckydrawapi.dadabhagwan.org/ak_questions/6.JPG',
+    'answers': [
+      {
+        'answer': 'Brain',
+        'related_words': [
+          'mind'
+        ],
+        'weight': 9
+      },
+      {
+        'answer': 'Intellect',
+        'related_words': [
+          'intelligence',
+          'clever',
+          'cleverness'
+        ],
+        'weight': 15
+      },
+      {
+        'answer': 'Ego',
+        'related_words': [
+          'Egoism',
+          'Egoistic'
+        ],
+        'weight': 15
+      },
+      {
+        'answer': 'Computer',
+        'related_words': [
+          'Pc',
+          'Laptop'
+        ],
+        'weight': 20
+      },
+      {
+        'answer': 'Bulb',
+        'related_words': [
+          'light',
+          'bulbs',
+          'tube light'
         ],
         'weight': 6
       },
       {
-        u'answer': u'White',
-        u'related_words': [
-          u'color',
-          u'green',
-          u'purple'
+        'answer': 'Nerves',
+        'related_words': [
+          'veins',
+          'capillaries',
+          'nervous system'
+        ],
+        'weight': 4
+      },
+      {
+        'answer': 'Red',
+        'related_words': [
+          'orange',
+          'color',
+          'green',
+          'yellow'
+        ],
+        'weight': 5
+      },
+      {
+        'answer': 'Effect',
+        'related_words': [
+          'glow',
+          'aura'
+        ],
+        'weight': 12
+      },
+      {
+        'answer': 'Curves',
+        'related_words': [
+          'lines',
+          '',
+          'clouds',
+          'waves',
+          'design',
+          'pattern'
+        ],
+        'weight': 2
+      },
+      {
+        'answer': 'Round',
+        'related_words': [
+          'balloons',
+          'shape',
+          'shapes'
+        ],
+        'weight': 12
+      }
+    ]
+  },
+  {
+    'url': 'http://luckydrawapi.dadabhagwan.org/ak_questions/7.JPG',
+    'answers': [
+      {
+        'answer': 'Goddess',
+        'related_words': [
+          'Lakshmi',
+          'deity',
+          'devi'
+        ],
+        'weight': 16
+      },
+      {
+        'answer': 'Money',
+        'related_words': [
+          'wealth',
+          'fortune'
+        ],
+        'weight': 16
+      },
+      {
+        'answer': 'Coin',
+        'related_words': [
+          'currency'
+        ],
+        'weight': 16
+      },
+      {
+        'answer': 'Metal',
+        'related_words': [
+          'copper',
+          'metallic'
+        ],
+        'weight': 16
+      },
+      {
+        'answer': 'Kumkum',
+        'related_words': [
+          'sindur',
+          'vermilion'
         ],
         'weight': 6
       },
       {
-        u'answer': u'Hands',
-        u'related_words': [
-          u'hand'
+        'answer': 'Law',
+        'related_words': [
+          'rule',
+          'rules'
         ],
         'weight': 6
       },
       {
-        u'answer': u'Namashkar',
-        u'related_words': [
-          u'greetings',
-          u'gesture'
+        'answer': 'Elephant',
+        'related_words': [
+          'Elephants',
+          'Animal'
         ],
         'weight': 6
       },
       {
-        u'answer': u'Smile',
-        u'related_words': [
-          u'smiles',
-          u'happy'
+        'answer': 'Vehicle',
+        'related_words': [
+          'automobile',
+          'motor'
         ],
         'weight': 6
       },
       {
-        u'answer': u'Pillow',
-        u'related_words': [
-          u'cushion'
+        'answer': 'Gold',
+        'related_words': [
+          'Golden'
         ],
         'weight': 6
       },
       {
-        u'answer': u'Sofa',
-        u'related_words': [
-          u'chair',
-          u'couch'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Mother',
-        u'related_words': [
-          u'mom',
-          u'maa'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Female',
-        u'related_words': [
-          u'lady',
-          u'gender'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Logo',
-        u'related_words': [
-          u'language',
-          u'magazine',
-          u'month',
-          u'year',
-          u'price',
-          u'cost',
-          u'amount',
-          u'rupees',
-          u'language'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Nurture',
-        u'related_words': [
-          u'upbringing'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Saree',
-        u'related_words': [
-          u'clothes',
-          u'dress'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Gnani',
-        u'related_words': [
-          u'spiritual leader',
-          u'leader',
-          u'teacher',
-          u'guru'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Pure',
-        u'related_words': [
-          u'purity'
-        ],
-        'weight': 6
-      },
-      {
-        u'answer': u'Noble',
-        u'related_words': [
-          u'nobility'
+        'answer': 'Lotus',
+        'related_words': [
+          'Flower'
         ],
         'weight': 6
       }
     ]
   },
   {
-    u'url': u'http://luckydrawapi.dadabhagwan.org/ak_questions/4.JPG',
-    u'answers': [
+    'url': 'http://luckydrawapi.dadabhagwan.org/ak_questions/8.JPG',
+    'answers': [
       {
-        u'answer': u'Pictures',
-        u'related_words': [
-          u'picture',
-          u'images',
-          u'image',
-          u'snapshot'
+        'answer': 'Cigarette',
+        'related_words': [
+          'tobacco',
+          'cigar'
         ],
-        'weight': 7
+        'weight': 9
       },
       {
-        u'answer': u'Present',
-        u'related_words': [
-          u'now',
-          u'today'
+        'answer': 'Smoking',
+        'related_words': [
+          'smokes',
+          'smoke'
         ],
-        'weight': 7
+        'weight': 15
       },
       {
-        u'answer': u'Freedom',
-        u'related_words': [
-          u'liberty'
+        'answer': 'Skull',
+        'related_words': [
+          'skeleton'
         ],
-        'weight': 7
+        'weight': 15
       },
       {
-        u'answer': u'Peace',
-        u'related_words': [
-          u'calm'
+        'answer': 'Death',
+        'related_words': [
+          'die',
+          'kill'
         ],
-        'weight': 7
+        'weight': 20
       },
       {
-        u'answer': u'Enjoy',
-        u'related_words': [
-          u'happy',
-          u'happiness',
-          u'pleasure'
+        'answer': 'Dark',
+        'related_words': [
+          'darkness',
+          'black'
         ],
-        'weight': 7
+        'weight': 6
       },
       {
-        u'answer': u'Pose',
-        u'related_words': [
-          u'statue'
+        'answer': 'Harmful',
+        'related_words': [
+          'unhealthy',
+          'damaging',
+          'injurious'
         ],
-        'weight': 7
+        'weight': 4
       },
       {
-        u'answer': u'Family',
-        u'related_words': [
-          u'friends',
-          u'mother',
-          u'father',
-          u'mom',
-          u'dad',
-          u'children',
-          u'kids'
+        'answer': 'Addiction',
+        'related_words': [
+          'addicted',
+          'craving',
+          'crave'
         ],
-        'weight': 7
+        'weight': 5
       },
       {
-        u'answer': u'Krishna',
-        u'related_words': [
-          u'god',
-          u'lord'
+        'answer': 'Factory',
+        'related_words': [
+          'mill',
+          'plant'
         ],
-        'weight': 7
+        'weight': 12
       },
       {
-        u'answer': u'Price',
-        u'related_words': [
-          u'logo',
-          u'language',
-          u'magazine',
-          u'month',
-          u'year',
-          u'cost',
-          u'amount',
-          u'rupees',
-          u'language'
+        'answer': 'Heart',
+        'related_words': [
+          'hearts'
         ],
-        'weight': 7
+        'weight': 2
       },
       {
-        u'answer': u'Food',
-        u'related_words': [
-          u'dishes',
-          u'fruits',
-          u'fruit',
-          u'dish'
+        'answer': 'Ghost',
+        'related_words': [
+          'spirit',
+          'bhoot'
         ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Shoes',
-        u'related_words': [
-          u'belt',
-          u'wallet',
-          u'shades',
-          u'goggles',
-          u'accessories'
-        ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Book',
-        u'related_words': [
-          u'books',
-          u'knowledge',
-          u'gnan'
-        ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Home',
-        u'related_words': [
-          u'house',
-          u'bungalow'
-        ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Sunset',
-        u'related_words': [
-          u'sun',
-          u'light',
-          u'day'
-        ],
-        'weight': 7
+        'weight': 12
       }
     ]
   },
   {
-    u'url': u'http://luckydrawapi.dadabhagwan.org/ak_questions/5.JPG',
-    u'answers': [
+    'url': 'http://luckydrawapi.dadabhagwan.org/ak_questions/9.JPG',
+    'answers': [
       {
-        u'answer': u'Pride',
-        u'related_words': [
-          u'proud'
+        'answer': '+',
+        'related_words': [
+          'plus',
+          'sign'
         ],
-        'weight': 7
+        'weight': 10
       },
       {
-        u'answer': u'Rude',
-        u'related_words': [
-          u'arrogance'
+        'answer': 'Attitude',
+        'related_words': [
+          'approach',
+          'reaction'
         ],
-        'weight': 7
+        'weight': 44
       },
       {
-        u'answer': u'Suffer',
-        u'related_words': [
-          u'suffering',
-          u'guilt'
+        'answer': 'Nature',
+        'related_words': [
+          'behavior',
+          'behave'
         ],
-        'weight': 7
+        'weight': 10
       },
       {
-        u'answer': u'Arrows',
-        u'related_words': [
-          u'arrow'
-        ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Thermometer',
-        u'related_words': [
-          u'manometer',
-          u'temperature'
-        ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Temple',
-        u'related_words': [
-          u'mandir',
-          u'trimandir'
-        ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Flags',
-        u'related_words': [
-          u'dhaja'
-        ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Ego',
-        u'related_words': [
-          u'attitude'
-        ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Pose',
-        u'related_words': [
-          u'figure',
-          u'human',
-          u'body',
-          u'structure'
-        ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Yellow',
-        u'related_words': [
-          u'color',
-          u'green',
-          u'blue',
-          u'white',
-          u'red'
-        ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Month',
-        u'related_words': [
-          u'price',
-          u'logo',
-          u'language',
-          u'magazine',
-          u'',
-          u'year',
-          u'cost',
-          u'amount',
-          u'rupees',
-          u'language'
-        ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Yuva',
-        u'related_words': [
-          u'youth',
-          u'teenage'
-        ],
-        'weight': 7
-      },
-      {
-        u'answer': u'Shapes',
-        u'related_words': [
-          u'triangle',
-          u'square',
-          u'rectangle'
-        ],
-        'weight': 7
-      }
-    ]
-  },
-  {
-    u'url': u'http://luckydrawapi.dadabhagwan.org/ak_questions/6.JPG',
-    u'answers': [
-      {
-        u'answer': u'Brain',
-        u'related_words': [
-          u'mind'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Intellect',
-        u'related_words': [
-          u'intelligence',
-          u'clever',
-          u'cleverness'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Ego',
-        u'related_words': [
-          u'Egoism',
-          u'Egoistic'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Computer',
-        u'related_words': [
-          u'Pc',
-          u'Laptop'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Bulb',
-        u'related_words': [
-          u'light',
-          u'bulbs',
-          u'tube light'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Nerves',
-        u'related_words': [
-          u'veins',
-          u'capillaries',
-          u'nervous system'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Red',
-        u'related_words': [
-          u'orange',
-          u'color',
-          u'green',
-          u'yellow'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Effect',
-        u'related_words': [
-          u'glow',
-          u'aura'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Year',
-        u'related_words': [
-          u'month',
-          u'price',
-          u'logo',
-          u'language',
-          u'magazine',
-          u'',
-          u'cost',
-          u'amount',
-          u'rupees',
-          u'language'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Curves',
-        u'related_words': [
-          u'lines',
-          u'',
-          u'clouds',
-          u'waves',
-          u'design',
-          u'pattern'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Round',
-        u'related_words': [
-          u'balloons',
-          u'shape',
-          u'shapes'
-        ],
-        'weight': 9
-      }
-    ]
-  },
-  {
-    u'url': u'http://luckydrawapi.dadabhagwan.org/ak_questions/7.JPG',
-    u'answers': [
-      {
-        u'answer': u'Goddess',
-        u'related_words': [
-          u'Lakshmi',
-          u'deity',
-          u'devi'
+        'answer': 'Placebo',
+        'related_words': [
+          'treatment',
+          'effect'
         ],
         'weight': 8
       },
       {
-        u'answer': u'Money',
-        u'related_words': [
-          u'wealth',
-          u'fortune'
+        'answer': 'Clips',
+        'related_words': [
+          'clip',
+          'thread'
+        ],
+        'weight': 4
+      },
+      {
+        'answer': 'Callouts',
+        'related_words': [
+          'chats',
+          'chat',
+          'dialogue box'
         ],
         'weight': 8
       },
       {
-        u'answer': u'Coin',
-        u'related_words': [
-          u'currency'
+        'answer': 'Hanging',
+        'related_words': [
+          'hang'
         ],
-        'weight': 8
+        'weight': 1
       },
       {
-        u'answer': u'Metal',
-        u'related_words': [
-          u'copper',
-          u'metallic'
+        'answer': 'Thoughts',
+        'related_words': [
+          'thought',
+          'thinking'
         ],
-        'weight': 8
+        'weight': 5
       },
       {
-        u'answer': u'Kumkum',
-        u'related_words': [
-          u'sindur',
-          u'vermilion'
+        'answer': 'Positivity',
+        'related_words': [
+          'optimism',
+          'confidence'
         ],
-        'weight': 8
+        'weight': 5
       },
       {
-        u'answer': u'Law',
-        u'related_words': [
-          u'rule',
-          u'rules'
+        'answer': 'Happy',
+        'related_words': [
+          'happiness'
         ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Elephant',
-        u'related_words': [
-          u'Elephants',
-          u'Animal'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Vehicle',
-        u'related_words': [
-          u'automobile',
-          u'motor'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Gold',
-        u'related_words': [
-          u'Golden'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Lotus',
-        u'related_words': [
-          u'Flower'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Follow',
-        u'related_words': [
-          u'obey',
-          u'abide'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Vishnu',
-        u'related_words': [
-          u'Narayan',
-          u'Husband'
-        ],
-        'weight': 8
-      }
-    ]
-  },
-  {
-    u'url': u'http://luckydrawapi.dadabhagwan.org/ak_questions/8.JPG',
-    u'answers': [
-      {
-        u'answer': u'Cigarette',
-        u'related_words': [
-          u'tobacco',
-          u'cigar'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Smoking',
-        u'related_words': [
-          u'smokes',
-          u'smoke'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Bad company',
-        u'related_words': [
-          u'kusang'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Skull',
-        u'related_words': [
-          u'skeleton'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Death',
-        u'related_words': [
-          u'die',
-          u'kill'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Dark',
-        u'related_words': [
-          u'darkness',
-          u'black'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Harmful',
-        u'related_words': [
-          u'unhealthy',
-          u'damaging',
-          u'injurious'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Addiction',
-        u'related_words': [
-          u'addicted',
-          u'craving',
-          u'crave'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Factory',
-        u'related_words': [
-          u'mill',
-          u'plant'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Heart',
-        u'related_words': [
-          u'hearts'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'W',
-        u'related_words': [
-          u'U',
-          u'alphabets'
-        ],
-        'weight': 8
-      },
-      {
-        u'answer': u'Ghost',
-        u'related_words': [
-          u'spirit',
-          u'bhoot'
-        ],
-        'weight': 8
-      }
-    ]
-  },
-  {
-    u'url': u'http://luckydrawapi.dadabhagwan.org/ak_questions/9.JPG',
-    u'answers': [
-      {
-        u'answer': u'+',
-        u'related_words': [
-          u'plus',
-          u'sign'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Attitude',
-        u'related_words': [
-          u'approach',
-          u'reaction'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Nature',
-        u'related_words': [
-          u'behavior',
-          u'behave'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Placebo',
-        u'related_words': [
-          u'treatment',
-          u'effect'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Clips',
-        u'related_words': [
-          u'clip',
-          u'thread'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Callouts',
-        u'related_words': [
-          u'chats',
-          u'chat',
-          u'dialogue box'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Hanging',
-        u'related_words': [
-          u'hang'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Thoughts',
-        u'related_words': [
-          u'thought',
-          u'thinking'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Positivity',
-        u'related_words': [
-          u'optimism',
-          u'confidence'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Happy',
-        u'related_words': [
-          u'happiness'
-        ],
-        'weight': 9
-      },
-      {
-        u'answer': u'Words',
-        u'related_words': [
-          u'vowels',
-          u'alphabets'
-        ],
-        'weight': 9
+        'weight': 5
       }
     ]
   }

@@ -422,8 +422,7 @@ app.post("/ak_questionDetails", (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             let encoded_results = [];
-            let weights = []
-            console.log(result);
+            let weights = [];
             for(let i = 0; i < result.answers.length; i++) {
                 let ans = result.answers[i];
                 encoded_related_words = [Buffer.from(ans.answer).toString("base64")];
