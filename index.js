@@ -42,6 +42,7 @@ MongoClient.connect(
         nextCouponNumber = db.collection("nextCouponNumber");
         notifications = db.collection("notifications");
         ak_questions = db.collection('ak_questions');
+        user_ak_answers = db.collection('user_ak_answers');
     }
 );
 
@@ -376,7 +377,7 @@ app.post("/getUserTickets", (req, res) => {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             if (_user) {
-                res.send({ earnedTickets: _user.earnedTickets, ticketMapping: _user.ticketMapping })
+                res.send({ earnedTickets: _user.earnedTickets, ticketMapping: _user.ticketMapping, new_game: false })
             } else {
                 res.status(400).json({ err: "No user Found!!" });
             }
@@ -415,24 +416,90 @@ app.post("/questionDetails", (req, res) => {
 });
 
 app.post("/ak_questionDetails", (req, res) => {
-    let url = "http://luckydrawapi.dadabhagwan.org:60371/ak_questions/" + req.body.ak_ques_st + ".JPG";
+    let url = "http://luckydrawapi.dadabhagwan.org/ak_questions/" + req.body.ak_ques_st + ".JPG";
     ak_questions.findOne({url: url}, (err, result) => {
         if(err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             let encoded_results = [];
-            console.log(result);
+            let weights = [];
             for(let i = 0; i < result.answers.length; i++) {
                 let ans = result.answers[i];
                 encoded_related_words = [Buffer.from(ans.answer).toString("base64")];
+                weights.push(ans.weight)
                 for(let v = 0; v < ans.related_words.length; v++) {
                     encoded_related_words.push(Buffer.from(ans.related_words[v]).toString("base64"));
                 }
                 encoded_results.push(encoded_related_words);
             }
-            res.send({url: result.url, answers: encoded_results});
+            user_ak_answers.findOne({"ak_ques_st": req.body.ak_ques_st, "contactNumber": req.body.contactNumber}, (error, result1) => {
+                if(error) {
+                    res.status(500).json({ err: "internal server error please try again later." });
+                } else {
+                    if(result1) {
+                        res.send({url: result.url, answers: encoded_results, answered: result1.answers, weight: weights});
+                    } else {
+                        res.send({url: result.url, answers: encoded_results, answered: [], weight: weights});
+                    }
+                }
+            });
+            
         }
     })
+});
+
+app.post("/save_user_answers", (req, res) => {
+    user_ak_answers.findOne({"contactNumber": req.body.contactNumber, "ak_ques_st": req.body.ak_ques_st}, (err, result) => {
+        if(err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            if(result) {
+                user_ak_answers.updateOne({"contactNumber": req.body.contactNumber, "ak_ques_st": req.body.ak_ques_st}, 
+                {$set: {"answers": req.body.answer}}, { upsert: true }, (error, result1) => {
+                    if(error) {
+                        res.status(500).json({ err: "internal server error please try again later." });
+                    } else {
+                        res.status(200).json({"msg": "State saved"});
+                    }
+                })
+            } else {
+                user_ak_answers.insertOne({"contactNumber": req.body.contactNumber,
+                                           "ak_ques_st": req.body.ak_ques_st,
+                                           "answers": req.body.answer}, (error, result1) => {
+                    if(error) {
+                        res.status(500).json({ err: "internal server error please try again later." });
+                    } else {
+                        res.status(200).json({"msg": "State saved"});
+                    }
+                });
+            }
+        }
+    });
+});
+
+
+app.post("/getAKUserState", (req, res) => {
+    final_result = [];
+    ak_questions.aggregate([{"$project": {"_id": "$url", "total":{$size: "$answers"}}}]).toArray((error, result) => {
+        user_ak_answers.find({"contactNumber": req.body.contactNumber})
+                   .toArray((error, result1) => {
+                        for(let uaa = 0; uaa < result.length; uaa++) {
+                            let temp_url = result[uaa]._id;
+                            //let answerCount = result1[uaa].answers.length;
+                            for(let i = 0; i < result1.length; i++) {
+                                if(temp_url == "http://luckydrawapi.dadabhagwan.org/ak_questions/" + result1[i].ak_ques_st + ".JPG") {
+                                    final_result.push({"ak_ques_st": result1[i].ak_ques_st, "total": result[i].total, "answered": result1[i].answers.length});
+                                    break;
+                                }
+                                if(i == (result1.length-1)) {
+                                    let ak_ques_st = temp_url.replace("http://luckydrawapi.dadabhagwan.org/ak_questions/", "").replace(".JPG", "");
+                                    final_result.push({"ak_ques_st": ak_ques_st, "total": result[i].total, "answered": 0});
+                                }
+                            }
+                        }
+                        res.send({"result_stats": final_result});
+                   });
+    });
 });
 
 app.post("/getDrawSlots", (req, res) => {
@@ -548,7 +615,7 @@ app.post("/generateTicketForAK", (req, res) => {
 });
 
 map = function() {
-    if(this.questionState <= 25)
+    if(this.questionState <= 25 && this.questionState > 0)
         emit("<25", 1);
     if(this.questionState > 25 && this.questionState <= 50)
         emit("<50", 1);
@@ -558,6 +625,8 @@ map = function() {
        emit("<100", 1);
     if(this.questionState >= 100)
        emit("=100", 1);
+    if(this.questionState == 0)
+        emit("=0", 1);
     emit("userCount", 1)
 }
 
@@ -605,6 +674,20 @@ app.post("/deleteUser", (req, res) => {
 
 app.get("/test", (req, res) => {
     res.send({ test: "its working check your code first....." });
+});
+
+app.post("/sos", (req, res) => {
+    if(req.body.name && req.body.number && req.body.center) {
+        let message = "Jsca ! Please help me. " + req.body.name + " from " + req.body.center + " Mo: " + req.body.number;
+        request('http://api.msg91.com/api/sendhttp.php?country=91&sender=MBASOS&route=4&mobiles=8153922317&authkey=192315AnTq0Se1Q5a54abb2&message=' + message, { json: true }, (err, otp, body) => {
+            if (err) {
+                console.log(err);
+                res.status(500).json({ err: "internal server error please try again later." });
+            } else {
+                res.status(200).json({"result": "Message sent"});
+            }
+        });
+    }
 });
 
 user = {
