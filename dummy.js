@@ -738,90 +738,90 @@ MongoClient.connect(url, function (err, client) {
       }
     ]
   },
-  {
-    'url': 'http://luckydrawapi.dadabhagwan.org/ak_questions/9.JPG',
-    'answers': [
-      {
-        'answer': '+',
-        'related_words': [
-          'plus',
-          'sign'
-        ],
-        'weight': 10
-      },
-      {
-        'answer': 'Attitude',
-        'related_words': [
-          'approach',
-          'reaction'
-        ],
-        'weight': 44
-      },
-      {
-        'answer': 'Nature',
-        'related_words': [
-          'behavior',
-          'behave'
-        ],
-        'weight': 10
-      },
-      {
-        'answer': 'Placebo',
-        'related_words': [
-          'treatment',
-          'effect'
-        ],
-        'weight': 8
-      },
-      {
-        'answer': 'Clips',
-        'related_words': [
-          'clip',
-          'thread'
-        ],
-        'weight': 4
-      },
-      {
-        'answer': 'Callouts',
-        'related_words': [
-          'chats',
-          'chat',
-          'dialogue box'
-        ],
-        'weight': 8
-      },
-      {
-        'answer': 'Hanging',
-        'related_words': [
-          'hang'
-        ],
-        'weight': 1
-      },
-      {
-        'answer': 'Thoughts',
-        'related_words': [
-          'thought',
-          'thinking'
-        ],
-        'weight': 5
-      },
-      {
-        'answer': 'Positivity',
-        'related_words': [
-          'optimism',
-          'confidence'
-        ],
-        'weight': 5
-      },
-      {
-        'answer': 'Happy',
-        'related_words': [
-          'happiness'
-        ],
-        'weight': 5
-      }
-    ]
-  }
+  // {
+  //   'url': 'http://luckydrawapi.dadabhagwan.org/ak_questions/9.JPG',
+  //   'answers': [
+  //     {
+  //       'answer': '+',
+  //       'related_words': [
+  //         'plus',
+  //         'sign'
+  //       ],
+  //       'weight': 10
+  //     },
+  //     {
+  //       'answer': 'Attitude',
+  //       'related_words': [
+  //         'approach',
+  //         'reaction'
+  //       ],
+  //       'weight': 44
+  //     },
+  //     {
+  //       'answer': 'Nature',
+  //       'related_words': [
+  //         'behavior',
+  //         'behave'
+  //       ],
+  //       'weight': 10
+  //     },
+  //     {
+  //       'answer': 'Placebo',
+  //       'related_words': [
+  //         'treatment',
+  //         'effect'
+  //       ],
+  //       'weight': 8
+  //     },
+  //     {
+  //       'answer': 'Clips',
+  //       'related_words': [
+  //         'clip',
+  //         'thread'
+  //       ],
+  //       'weight': 4
+  //     },
+  //     {
+  //       'answer': 'Callouts',
+  //       'related_words': [
+  //         'chats',
+  //         'chat',
+  //         'dialogue box'
+  //       ],
+  //       'weight': 8
+  //     },
+  //     {
+  //       'answer': 'Hanging',
+  //       'related_words': [
+  //         'hang'
+  //       ],
+  //       'weight': 1
+  //     },
+  //     {
+  //       'answer': 'Thoughts',
+  //       'related_words': [
+  //         'thought',
+  //         'thinking'
+  //       ],
+  //       'weight': 5
+  //     },
+  //     {
+  //       'answer': 'Positivity',
+  //       'related_words': [
+  //         'optimism',
+  //         'confidence'
+  //       ],
+  //       'weight': 5
+  //     },
+  //     {
+  //       'answer': 'Happy',
+  //       'related_words': [
+  //         'happiness'
+  //       ],
+  //       'weight': 5
+  //     }
+  //   ]
+  // }
 ]
     );
 
