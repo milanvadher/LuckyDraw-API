@@ -551,7 +551,6 @@ MongoClient.connect(url, function (err, client) {
         'answer': 'Curves',
         'related_words': [
           'lines',
-          '',
           'clouds',
           'waves',
           'design',
