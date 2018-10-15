@@ -494,7 +494,7 @@ app.post("/getAKUserState", (req, res) => {
                     let temp_url = result[uaa]._id;
                     //let answerCount = result1[uaa].answers.length;
                     if(result1.length == 0) {
-                        // let ak_ques_st = temp_url.replace("http://luckydrawapi.dadabhagwan.org/ak_questions/", "").replace(".JPG", "");
+                        let ak_ques_st = temp_url.replace("http://luckydrawapi.dadabhagwan.org/ak_questions/", "").replace(".JPG", "");
                         // let ak_ques_st = temp_url.replace("http://192.168.43.23:3000/ak_questions/", "").replace(".JPG", "");
                         // let ak_ques_st = temp_url.replace("http://192.168.1.103:3000/ak_questions/", "").replace(".JPG", "");
                         final_result.push({ "ak_ques_st": ak_ques_st, "total": result[uaa].total, "answered": 0 });
