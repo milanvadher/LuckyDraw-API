@@ -63,6 +63,7 @@ app.post("/login", (req, res) => {
                         username: result.username,
                         ak_ques_st: result.ak_ques_st,
                         profile: true,
+                        vc_code: result.vc_code
                     });
                 } else {
                     res.status(404).json({ err: "user not found" });
@@ -311,6 +312,11 @@ app.post("/register", (req, res) => {
         } else {
             if (!result) {
                 if (req.body.username && req.body.contactNumber && req.body.password) {
+                    let vc_code = voucher_codes.generate({
+                        length: 8,
+                        count: 1,
+                        prefix: 'JJ111-'
+                    });
                     users.insertOne({
                         username: req.body.username,
                         contactNumber: req.body.contactNumber,
@@ -319,7 +325,8 @@ app.post("/register", (req, res) => {
                         points: 100,
                         earnedTickets: [],
                         isNewUser: true,
-                        password: req.body.password
+                        password: req.body.password,
+                        vc_code: vc_code
                     });
                     res.send({
                         questionState: 0,
@@ -328,6 +335,7 @@ app.post("/register", (req, res) => {
                         contactNumber: req.body.contactNumber,
                         username: req.body.username,
                         profile: true,
+                        vc_code: vc_code
                     });
                 } else {
                     res.status(401).json({ err: "Invalid Data!!" });
