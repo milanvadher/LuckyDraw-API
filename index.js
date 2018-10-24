@@ -112,7 +112,8 @@ app.post("/saveUserData", (req, res) => {
         if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
-            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { questionState: req.body.questionState, points: req.body.points, ak_ques_st: temp_ak_ques_st } }, function (err, _result) {
+            let qst = result.questionState >= 100 ? result.questionState : req.body.questionState;
+            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { questionState: qst, points: req.body.points, ak_ques_st: temp_ak_ques_st } }, function (err, _result) {
                 if (err) {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
