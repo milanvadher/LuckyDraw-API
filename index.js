@@ -108,6 +108,7 @@ app.post("/ticketDetails", (req, res) => {
 
 app.post("/saveUserData", (req, res) => {
     let temp_ak_ques_st = req.body.ak_ques_st ? req.body.ak_ques_st : 1
+    let temp_points = (req.body.points > 0) ? req.body.points : 0;
     users.findOne({ contactNumber: req.body.contactNumber }, function (err, result) {
         if (err) {
             res.status(500).json({ err: "internal server error please try again later." });
@@ -116,7 +117,7 @@ app.post("/saveUserData", (req, res) => {
             if((result.questionState >= 100) || (result.questionState > req.body.questionState) || (result.questionState != (req.body.questionState - 1))) {
                 qst = result.questionState;
             }
-            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { questionState: qst, points: req.body.points, ak_ques_st: temp_ak_ques_st } }, function (err, _result) {
+            users.updateOne({ contactNumber: req.body.contactNumber }, { $set: { questionState: qst, points: temp_points, ak_ques_st: temp_ak_ques_st } }, function (err, _result) {
                 if (err) {
                     res.status(500).json({ err: "internal server error please try again later." });
                 } else {
