@@ -439,13 +439,13 @@ Requires 2 parameters
 */
 app.post("/generateResult", (req, res) => {
     let draws = req.body.draws;
-    let date = req.body.date;
+    //let date = req.body.date;
     drawSlots.find({"date": new Date("2018-11-16T13:00:00Z")}, {users: 1}).toArray((err, result) => {
         if(err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
             drawSlots.mapReduce(mapContactNumber, reduce1, {out :{inline: 1}}).then((m) => {
-                console.log("nn", m, draws, result)
+                //console.log("nn", m, draws, result)
                 pre_winners = m.length > 0 ? m[0].value.split(",") : []
                 drawSlot_winners = [];
                 draws.forEach(draw => {
@@ -453,7 +453,7 @@ app.post("/generateResult", (req, res) => {
                     
                     console.log("in 111")
                     while(winners.length < draw.count) {
-                        console.log("in 111", winners.length, draw.count)
+                        //console.log("in 111", winners.length, draw.count)
                         /*if(max_counter <= 0) {
                             db.drawSlots.updateOne({"date": date}, {$set: {result : []}})
                         }*/
@@ -472,14 +472,20 @@ app.post("/generateResult", (req, res) => {
                 console.log("in 112222221", drawSlot_winners)
                 let tempCounter = 0;
                 final_result = []
+                let temp_draws = []
+                draws.forEach(d => {
+                    for(let g=0; g < d.count; g++) {
+                        temp_draws.push({"prize": d.prize})
+                    }
+                });
+                console.log()
                 drawSlot_winners.forEach(d_w => {
-                    tempCounter++;
-                    drawSlots.updateOne({"date": new Date("2018-11-16T13:00:00Z")}, {$push: {result : {contactNumber: d_w.contactNumber, prize: draws[tempCounter-1].prize, ticket: d_w.ticket}}}, (err1, res1) => {
-                        console.log(err1)
-                        final_result.push({contactNumber: d_w.contactNumber, prize: draws[tempCounter-1].prize, ticket: d_w.ticket})
-                        console.log("in 112221", drawSlot_winners.length, tempCounter)
-                        if(drawSlot_winners.length == tempCounter) {
-                            console.log(final_result);
+                    drawSlots.updateOne({"date": new Date("2018-11-16T13:00:00Z")}, {$push: {result : {contactNumber: d_w.contactNumber, prize: draws[tempCounter].prize, ticket: d_w.ticket}}}, (err1, res1) => {
+                        console.log("tempCounter ", tempCounter);
+                        final_result.push({contactNumber: d_w.contactNumber, prize: temp_draws[tempCounter].prize, ticket: d_w.ticket})
+                        //console.log("in 112221", drawSlot_winners.length, tempCounter)
+                        if(drawSlot_winners.length == ++tempCounter) {
+                            console.log("sending final_result", drawSlot_winners.length, tempCounter);
                             res.send({"results" : final_result})
                         }
                     })
@@ -489,14 +495,6 @@ app.post("/generateResult", (req, res) => {
             })
         }
     });
-    /*calculateResult(draws, new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6]), (err, result) => {
-        if(err) {
-            res.status(500).json({ err: "internal server error please try again later." });
-        } else {
-            print(JSON.stringify(result))
-            res.send({"results" : result})
-        }
-    })*/
 });
 
 
