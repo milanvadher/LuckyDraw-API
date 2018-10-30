@@ -570,27 +570,28 @@ app.post("/generateTicket", (req, res) => {
             questionState: req.body.questionState
         },
         function (err, result) {
+            console.log(req.body.contactNumber, req.body.questionState);
             if (err) {
                 res.status(500).json({ err: "internal server error please try again later." });
             } else {
                 if (result) {
-                    nextCouponNumber.findOne({}, function (err, dbRes) {
+                    nextCouponNumber.findOneAndUpdate({}, {$inc: {coupon: 1}}, {upsert: true}, function (err, dbRes) {
                         if (err) {
                             console.log("findone", err);
                         } else {
                             users.updateOne(
                                 { contactNumber: req.body.contactNumber },
-                                { $push: { earnedTickets: dbRes.coupon } },
+                                { $push: { earnedTickets: dbRes.value.coupon } },
                                 { upsert: true },
                                 function (err, _result) {
                                     if (err) {
                                         res.send({ msg: err });
                                     } else {
-                                        nextCouponNumber.updateOne(
-                                            { coupon: dbRes.coupon },
-                                            { $inc: { coupon: 1 } }
-                                        );
-                                        res.send({ msg: "You have got Ticket " + dbRes.coupon });
+                                        // nextCouponNumber.updateOne(
+                                        //     { coupon: dbRes.coupon },
+                                        //     { $inc: { coupon: 1 } }
+                                        // );
+                                        res.send({ msg: "You have got Ticket " + dbRes.value.coupon });
                                     }
                                 }
                             );
@@ -615,23 +616,23 @@ app.post("/generateTicketForAK", (req, res) => {
                 res.status(500).json({ err: "internal server error please try again later." });
             } else {
                 if (result) {
-                    nextCouponNumber.findOne({}, function (err, dbRes) {
+                    nextCouponNumber.findOneAndUpdate({}, {$inc: {coupon: 1}}, {upsert: true}, function (err, dbRes) {
                         if (err) {
                             console.log("findone", err);
                         } else {
                             users.updateOne(
                                 { contactNumber: req.body.contactNumber },
-                                { $push: { earnedTickets: dbRes.coupon } },
+                                { $push: { earnedTickets: dbRes.value.coupon } },
                                 { upsert: true },
                                 function (err, _result) {
                                     if (err) {
                                         res.send({ msg: err });
                                     } else {
-                                        nextCouponNumber.updateOne(
-                                            { coupon: dbRes.coupon },
-                                            { $inc: { coupon: 1 } }
-                                        );
-                                        res.send({ msg: "You have got Ticket " + dbRes.coupon });
+                                        // nextCouponNumber.updateOne(
+                                        //     { coupon: dbRes.coupon },
+                                        //     { $inc: { coupon: 1 } }
+                                        // );
+                                        res.send({ msg: "You have got Ticket " + dbRes.value.coupon });
                                     }
                                 }
                             );
@@ -643,6 +644,76 @@ app.post("/generateTicketForAK", (req, res) => {
             }
         }
     );
+});
+
+app.post("/registerAndGenerateTicket", (req, res) => {
+    users.findOne({"contactNumber": req.body.contactNumber}, (error, user) => {
+        if (error) {
+                res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            if(user) {
+                nextCouponNumber.findOneAndUpdate({}, {$inc: {coupon: 1}}, {upsert: true}, (err, dbRes) => {
+                    if(err) {
+                        res.status(500).json({ err: "internal server error please try again later." });
+                    } else {
+                        drawSlots.find({"result": []}).sort({date: 1}).toArray((error1, drawSlot1) => {
+                            console.log("jjj");
+                            console.log(drawSlot1[0].date);
+                            let date = drawSlot1[0].date;
+                            users.updateOne({"contactNumber": user.contactNumber}, 
+                            {$push: 
+                                { ticketMapping: 
+                                    { ticketNo: dbRes.value.coupon, 
+                                        assignDate: date } 
+                                }
+                            },
+                            {upsert: true}, (e, _res) => {
+                                if(e) {
+                                    res.status(500).json({ err: "internal server error please try again later." });
+                                } else {
+                                    drawSlots.updateOne({ date: date },
+                                    { $push: { users: { contactNumber: user.contactNumber, ticket: dbRes.value.coupon } } })
+                                    res.send({"contactNumber": user.contactNumber, "coupon": dbRes.value.coupon});
+                                }
+                            });
+                        });
+                    }
+                })
+            } else {
+                users.insertOne({"contactNumber": req.body.contactNumber, "username": "jj111", "password": "jj111", ticketMapping: []}, (err, result) => {
+                    if(err) {
+                        res.status(500).json({ err: "internal server error please try again later." });
+                    } else {
+                        nextCouponNumber.findOneAndUpdate({}, {$inc: {coupon: 1}}, {upsert: true}, (err1, dbRes) => {
+                            if(err1) {
+                                res.status(500).json({ err: "internal server error please try again later." });
+                            } else {
+                                drawSlots.find({"result": []}).sort({date: 1}).toArray((error1, drawSlot1) => {
+                                    let date = drawSlot1[0].date;
+                                    users.updateOne({"contactNumber": req.body.contactNumber}, 
+                                    {$push: 
+                                        { ticketMapping: 
+                                            { ticketNo: dbRes.value.coupon, 
+                                                assignDate: date } 
+                                        }
+                                    },
+                                    {upsert: true}, (e, _res) => {
+                                        if(e) {
+                                            res.status(500).json({ err: "internal server error please try again later." });
+                                        } else {
+                                            drawSlots.updateOne({ date: date },
+                                        { $push: { users: { contactNumber: req.body.contactNumber, ticket: dbRes.value.coupon } } })
+                                            res.send({"contactNumber": req.body.contactNumber, "coupon": dbRes.value.coupon});
+                                        }
+                                    });
+                                });
+                            }
+                        })
+                    }
+                })
+            }
+        }
+    })
 });
 
 map = function () {
