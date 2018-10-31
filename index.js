@@ -19,12 +19,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 /* Production URL */
-// const port = 60371;
-// const endPoint = 'http://luckydrawapi.dadabhagwan.org';
+const port = 60371;
+const endPoint = 'http://luckydrawapi.dadabhagwan.org';
 
 /* Local URL */
-const port = 3000;
-const endPoint = 'http://192.168.43.23:'+port;
+// const port = 3000;
+// const endPoint = 'http://192.168.43.23:'+port;
 
 var path = "./questions/";
 fs.readdir(path, function (err, items) {
