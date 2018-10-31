@@ -18,6 +18,14 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+/* Production URL */
+// const port = 60371;
+// const endPoint = 'http://luckydrawapi.dadabhagwan.org';
+
+/* Local URL */
+const port = 3000;
+const endPoint = 'http://192.168.43.23:'+port;
+
 var path = "./questions/";
 fs.readdir(path, function (err, items) {
     // console.log(items);
@@ -409,7 +417,7 @@ app.post("/questionDetails", (req, res) => {
                         let _images = [];
                         for (var j = 0; j < images.length; j++) {
                             _images.push(
-                                "http://luckydrawapi.dadabhagwan.org" + _path.substr(1) + "/" + images[j]
+                                endPoint + _path.substr(1) + "/" + images[j]
                                 // "http://192.168.43.23:3000" + _path.substr(1) + "/" + images[j]
                                 // "http://192.168.1.103:3000" + _path.substr(1) + "/" + images[j]
                             );
@@ -427,7 +435,7 @@ app.post("/questionDetails", (req, res) => {
 });
 
 app.post("/ak_questionDetails", (req, res) => {
-    let url = "http://luckydrawapi.dadabhagwan.org/ak_questions/" + req.body.ak_ques_st + ".JPG";
+    let url = endPoint + "/ak_questions/" + req.body.ak_ques_st + ".JPG";
     // let url = "http://192.168.43.23:3000/ak_questions/" + req.body.ak_ques_st + ".JPG";
     // let url = "http://192.168.1.103:3000/ak_questions/" + req.body.ak_ques_st + ".JPG";
     ak_questions.findOne({ url: url }, (err, result) => {
@@ -503,20 +511,20 @@ app.post("/getAKUserState", (req, res) => {
                     let temp_url = result[uaa]._id;
                     //let answerCount = result1[uaa].answers.length;
                     if(result1.length == 0) {
-                        let ak_ques_st = temp_url.replace("http://luckydrawapi.dadabhagwan.org/ak_questions/", "").replace(".JPG", "");
+                        let ak_ques_st = temp_url.replace(endPoint + "/ak_questions/", "").replace(".JPG", "");
                         // let ak_ques_st = temp_url.replace("http://192.168.43.23:3000/ak_questions/", "").replace(".JPG", "");
                         // let ak_ques_st = temp_url.replace("http://192.168.1.103:3000/ak_questions/", "").replace(".JPG", "");
                         final_result.push({ "ak_ques_st": ak_ques_st, "total": result[uaa].total, "answered": 0 });
                     } else {
                         for (let i = 0; i < result1.length; i++) {
-                            if(temp_url == "http://luckydrawapi.dadabhagwan.org/ak_questions/" + result1[i].ak_ques_st + ".JPG") {
+                            if(temp_url == endPoint + "/ak_questions/" + result1[i].ak_ques_st + ".JPG") {
                             // if (temp_url == "http://192.168.43.23:3000/ak_questions/" + result1[i].ak_ques_st + ".JPG") {
                                 // if (temp_url == "http://192.168.1.103:3000/ak_questions/" + result1[i].ak_ques_st + ".JPG") {
                                 final_result.push({ "ak_ques_st": result1[i].ak_ques_st, "total": result[uaa].total, "answered": result1[i].answers.length });
                                 break;
                             }
                             if (i == (result1.length - 1)) {
-                                let ak_ques_st = temp_url.replace("http://luckydrawapi.dadabhagwan.org/ak_questions/", "").replace(".JPG", "");
+                                let ak_ques_st = temp_url.replace(endPoint + "/ak_questions/", "").replace(".JPG", "");
                                 // let ak_ques_st = temp_url.replace("http://192.168.43.23:3000/ak_questions/", "").replace(".JPG", "");
                                 // let ak_ques_st = temp_url.replace("http://192.168.1.103:3000/ak_questions/", "").replace(".JPG", "");
                                 final_result.push({ "ak_ques_st": ak_ques_st, "total": result[uaa].total, "answered": 0 });
@@ -717,6 +725,93 @@ app.post("/sos", (req, res) => {
     }
 });
 
+
+
+
+mapContactNumber = function() {
+    if(this.result.length > 0)
+        this.result.map((k) => {
+            emit("contactNumber", k.contactNumber)    
+        })
+}
+
+reduce1 = function(key, values) {
+    return values.join(",")
+}
+
+
+/*
+Requires 2 parameters
+    draws: [
+        {prize: 1, count: 1},
+        {prize: 2, count: 1},
+        {prize: 3, count: 1}
+    ]
+    date 
+*/
+app.post("/generateResult", (req, res) => {
+    let draws = req.body.draws;
+    //let date = req.body.date;
+    drawSlots.find({"date": new Date(2018, 10, 16, 18, 30, 00)}, {users: 1}).toArray((err, result) => {
+        if(err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            drawSlots.mapReduce(mapContactNumber, reduce1, {out :{inline: 1}}).then((m) => {
+                //console.log("nn", m, draws, result)
+                pre_winners = m.length > 0 ? m[0].value.split(",") : []
+                drawSlot_winners = [];
+                draws.forEach(draw => {
+                    winners = [];
+                    
+                    console.log("in 111")
+                    while(winners.length < draw.count) {
+                        //console.log("in 111", winners.length, draw.count)
+                        /*if(max_counter <= 0) {
+                            db.drawSlots.updateOne({"date": date}, {$set: {result : []}})
+                        }*/
+                        index = Math.ceil(Math.random() * (result[0].users.length))-1;
+                        lucky_winner = result[0].users[index];
+                        if(pre_winners.indexOf(lucky_winner.contactNumber) < 0) {
+                            pre_winners.push(lucky_winner.contactNumber);
+                            winners.push(lucky_winner);
+                        } else {
+                            //max_counter--;
+                            continue;
+                        }
+                        drawSlot_winners.push(lucky_winner);
+                    }
+                });
+                console.log("in 112222221", drawSlot_winners)
+                let tempCounter = 0;
+                final_result = []
+                let temp_draws = []
+                draws.forEach(d => {
+                    for(let g=0; g < d.count; g++) {
+                        temp_draws.push({"prize": d.prize})
+                    }
+                });
+                console.log()
+                drawSlot_winners.forEach(d_w => {
+                    drawSlots.updateOne({"date": new Date(2018, 10, 16, 18, 30, 00)}, {$push: {result : {contactNumber: d_w.contactNumber, prize: draws[tempCounter].prize, ticket: d_w.ticket}}}, (err1, res1) => {
+                        console.log("tempCounter ", tempCounter);
+                        final_result.push({contactNumber: d_w.contactNumber, prize: temp_draws[tempCounter].prize, ticket: d_w.ticket})
+                        //console.log("in 112221", drawSlot_winners.length, tempCounter)
+                        if(drawSlot_winners.length == ++tempCounter) {
+                            console.log("sending final_result", drawSlot_winners.length, tempCounter);
+                            res.send({"results" : final_result})
+                        }
+                    })
+                });
+            }).catch((err2) => {
+                res.status(500).json({ err: "internal server error please try again later." });
+            })
+        }
+    });
+});
+
+
+
+
 user = {
     username: "",
     password: "",
@@ -735,5 +830,4 @@ drawDetails = {
     result: [{ users: [], ranking: "" }]
 }
 
-app.listen(60371, () => console.log("Example app listening on port 60371!"));
-// app.listen(3000, () => console.log("Example app listening on port 3000!"));
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));
