@@ -681,7 +681,7 @@ app.post("/registerAndGenerateTicket", (req, res) => {
                                 } else {
                                     drawSlots.updateOne({ date: date },
                                     { $push: { users: { contactNumber: user.contactNumber, ticket: dbRes.value.coupon } } })
-                                    res.send({"contactNumber": user.contactNumber, "coupon": dbRes.value.coupon});
+                                    res.send({"contactNumber": user.contactNumber, "coupon": dbRes.value.coupon, "drawTime": date});
                                 }
                             });
                         });
@@ -711,7 +711,7 @@ app.post("/registerAndGenerateTicket", (req, res) => {
                                         } else {
                                             drawSlots.updateOne({ date: date },
                                         { $push: { users: { contactNumber: req.body.contactNumber, ticket: dbRes.value.coupon } } })
-                                            res.send({"contactNumber": req.body.contactNumber, "coupon": dbRes.value.coupon});
+                                            res.send({"contactNumber": req.body.contactNumber, "coupon": dbRes.value.coupon, "drawTime": date});
                                         }
                                     });
                                 });
