@@ -484,6 +484,8 @@ app.post("/generateResult", (req, res) => {
                         console.log("tempCounter ", tempCounter);
                         final_result.push({contactNumber: d_w.contactNumber, prize: temp_draws[tempCounter].prize, ticket: d_w.ticket})
                         //console.log("in 112221", drawSlot_winners.length, tempCounter)
+                        //console.log('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYDRAW&route=4&mobiles=' + '+8153922317' + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + d_w.ticket + ' has won ' + temp_draws[tempCounter].prize + ' prize.');
+                        request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=+' + d_w.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + d_w.ticket + ' has won ' + temp_draws[tempCounter].prize + ' prize.', { json: true });
                         if(drawSlot_winners.length == ++tempCounter) {
                             console.log("sending final_result", drawSlot_winners.length, tempCounter);
                             res.send({"results" : final_result})
@@ -496,61 +498,6 @@ app.post("/generateResult", (req, res) => {
         }
     });
 });
-
-
-/*
-app.post("/generateResult", (req, res) => {
-    let draws = req.body.draws;
-    let date = req.body.date;
-    calculateResult(draws, new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6]), (err, result) => {
-        if(err) {
-            res.status(500).json({ err: "internal server error please try again later." });
-        } else {
-            print(JSON.stringify(result))
-            res.send({"results" : result})
-        }
-    })
-});
-*/
-
-//draws = req.body.draws;
-calculateResult = function(draws, date,  callback) {
-    final_result = []
-    max_counter = 1000;
-    draws.forEach(draw => {
-        k = db.drawSlots.find({"date": date}, {users: 1}).toArray();
-        m = db.drawSlots.mapReduce(mapContactNumber, reduce1, {out :{inline: 1}});
-        pre_winners = m.results.length > 0 ? m.results[0].value.split(",") : []
-        winners = [];
-                
-        drawSlot_winners = [];
-        //print(winners.length, " ", draw.count);
-        while(winners.length < draw.count) {
-            if(max_counter <= 0) {
-                db.drawSlots.updateOne({"date": date}, {$set: {result : []}})
-                callback("error") 
-            }
-            index = Math.ceil(Math.random() * (k[0].users.length))-1;
-            lucky_winner = k[0].users[index];
-            //print(pre_winners, " ", lucky_winner.contactNumber);
-            if(pre_winners.indexOf(lucky_winner.contactNumber) < 0) {
-                pre_winners.push(lucky_winner.contactNumber);
-                winners.push(lucky_winner);
-            } else {
-                max_counter--;
-                continue;
-            }
-            drawSlot_winners.push(lucky_winner);
-        }
-        drawSlot_winners.forEach(d_w => {
-            db.drawSlots.updateOne({"date": date}, {$push: {result : {contactNumber: d_w.contactNumber, prize: draw.prize, ticket: d_w.ticket}}})
-            final_result.push({contactNumber: d_w.contactNumber, prize: draw.prize, ticket: d_w.ticket})
-            //print(d_w.contactNumber, " ", draw.prize)
-        });   
-    })
-    callback(null, final_result)  
-}
-
 
 app.post("/generateTicket", (req, res) => {
     users.findOne(
