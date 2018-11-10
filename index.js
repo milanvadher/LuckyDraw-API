@@ -439,8 +439,8 @@ Requires 2 parameters
 */
 app.post("/generateResult", (req, res) => {
     let draws = req.body.draws;
-    //let date = req.body.date;
-    drawSlots.find({"date": new Date("2018-11-16T13:00:00Z")}, {users: 1}).toArray((err, result) => {
+    let date = req.body.date;
+    drawSlots.find({"date": new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6])}, {users: 1}).toArray((err, result) => {
         if(err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
@@ -478,9 +478,8 @@ app.post("/generateResult", (req, res) => {
                         temp_draws.push({"prize": d.prize})
                     }
                 });
-                console.log()
                 drawSlot_winners.forEach(d_w => {
-                    drawSlots.updateOne({"date": new Date("2018-11-16T13:00:00Z")}, {$push: {result : {contactNumber: d_w.contactNumber, prize: draws[tempCounter].prize, ticket: d_w.ticket}}}, (err1, res1) => {
+                    drawSlots.updateOne({"date": new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6])}, {$push: {result : {contactNumber: d_w.contactNumber, prize: draws[tempCounter].prize, ticket: d_w.ticket}}}, (err1, res1) => {
                         console.log("tempCounter ", tempCounter);
                         final_result.push({contactNumber: d_w.contactNumber, prize: temp_draws[tempCounter].prize, ticket: d_w.ticket})
                         //console.log("in 112221", drawSlot_winners.length, tempCounter)
@@ -495,6 +494,21 @@ app.post("/generateResult", (req, res) => {
             }).catch((err2) => {
                 res.status(500).json({ err: "internal server error please try again later." });
             })
+        }
+    });
+});
+
+app.post("/winnerlist", (req, res) => {
+    const date = req.body.date;
+    drawSlots.find({}, {users: 1}).toArray((err, result) => {
+        if(err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else if(result) {
+            let draw_results = [];
+            result.forEach((r) => {
+                draw_results.push({"date": r.date, "winner": r.result});
+            });
+            res.status(200).json({"result": draw_results});
         }
     });
 });
