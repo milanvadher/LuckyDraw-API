@@ -555,6 +555,21 @@ app.post("/getDrawSlots", (req, res) => {
         });
 });
 
+app.post("/winnerlist", (req, res) => {
+    const date = req.body.date;
+    drawSlots.find({}, {users: 1}).toArray((err, result) => {
+        if(err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else if(result) {
+            let draw_results = [];
+            result.forEach((r) => {
+                draw_results.push({"date": r.date, "winner": r.result});
+            });
+            res.status(200).json({"result": draw_results});
+        }
+    });
+});
+
 /*app.post("/generateResult", (req, res) => {
     drawSlots.find({date: new Date("2018-11-16T15:00:00Z")}).
     toArray((error, result) => {
