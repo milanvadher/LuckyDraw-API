@@ -339,6 +339,7 @@ app.post("/register", (req, res) => {
                         earnedTickets: [],
                         isNewUser: true,
                         password: req.body.password,
+                        ticketMapping: [],
                         vc_code: vc_code
                     });
                     res.send({
