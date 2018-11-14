@@ -608,7 +608,7 @@ app.post("/generateResult", (req, res) => {
                 });
                 drawSlot_winners.forEach(d_w => {
                         console.log("tempCounter ", tempCounter);
-                        final_result.push({number: d_w.contactNumber, prize: temp_draws[tempCounter].prize, ticket: d_w.ticket, contactNumber: d_w.username})
+                        final_result.push({contactNumber: d_w.contactNumber, prize: temp_draws[tempCounter].prize, ticket: d_w.ticket})
                         //request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=' + '8153922317' + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + d_w.ticket + ' has won ' + temp_draws[tempCounter].prize + ' prize.', { json: true });
                         //request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=+' + d_w.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + d_w.ticket + ' has won ' + temp_draws[tempCounter].prize + ' prize.', { json: true });
                         if(drawSlot_winners.length == ++tempCounter) {
