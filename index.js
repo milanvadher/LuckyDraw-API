@@ -569,12 +569,10 @@ Requires 2 parameters
 app.post("/generateResult", (req, res) => {
     let draws = req.body.draws;
     let date = req.body.date;
-    console.log(date);
-    drawSlots.find({"date": new Date(date[0], date[1] - 1, date[2], date[3] , date[4] , date[5], date[6])}, {users: 1}).toArray((err, result) => {
+    drawSlots.find({"date": new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6])}, {users: 1}).toArray((err, result) => {
         if(err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
-            console.log(new Date(date[0], date[1] - 1, date[2], date[3] , date[4] , date[5], date[6]));
             drawSlots.mapReduce(mapContactNumber, reduce1, {out :{inline: 1}}).then((m) => {
                 //console.log("nn", m, draws, result)
                 pre_winners = m.length > 0 ? m[0].value.split(",") : []
