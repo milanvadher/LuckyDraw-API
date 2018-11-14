@@ -608,8 +608,8 @@ app.post("/generateResult", (req, res) => {
                 });
                 drawSlot_winners.forEach(d_w => {
                         console.log("tempCounter ", tempCounter);
-                        final_result.push({contactNumber: d_w.contactNumber, prize: temp_draws[tempCounter].prize, ticket: d_w.ticket})
-                        request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=' + '8153922317' + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + d_w.ticket + ' has won ' + temp_draws[tempCounter].prize + ' prize.', { json: true });
+                        final_result.push({number: d_w.contactNumber, prize: temp_draws[tempCounter].prize, ticket: d_w.ticket, contactNumber: d_w.username})
+                        //request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=' + '8153922317' + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + d_w.ticket + ' has won ' + temp_draws[tempCounter].prize + ' prize.', { json: true });
                         //request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=+' + d_w.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + d_w.ticket + ' has won ' + temp_draws[tempCounter].prize + ' prize.', { json: true });
                         if(drawSlot_winners.length == ++tempCounter) {
                             drawSlots.updateOne({"date": new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6])}, {$set: {result : final_result}}, (err1, res1) => {});
@@ -625,6 +625,19 @@ app.post("/generateResult", (req, res) => {
     });
 }); 
 
+app.post("/sendSMS", (req, res) => {
+    let date = req.body.date;
+    drawSlots.findOne({"date": new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6])}, (err, result) => {
+        if(err) {
+            res.status(500).json({ err: "internal server error please try again later." });
+        } else {
+            for(let re=0; re < result.result.length; re++) {
+                request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=' + '8153922317' + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + result.result[re].ticket + ' has won ' + result.result[re].prize + ' prize.', { json: true });
+            }
+            res.status(200).json({ msg: "Msg Sent !!! " });
+        }
+    });
+})
 
 
 app.post("/winnerlist", (req, res) => {
