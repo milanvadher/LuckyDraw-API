@@ -580,18 +580,24 @@ app.post("/generateResult", (req, res) => {
                     winners = [];
                     
                     console.log("in 111")
+                    let num_count = Math.ceil(0.4 * draw.count);
+                    let string_count = draw.count - num_count;
+                    let type_array = [];
+                    for(let tc= 0; tc < num_count; tc++) {
+                        type_array.push("number");
+                    }
+                    for(let tc= 0; tc < string_count; tc++) {
+                        type_array.push("string");
+                    }
+                    console.log(type_array, new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6]));
                     while(winners.length < draw.count) {
-                        //console.log("in 111", winners.length, draw.count)
-                        /*if(max_counter <= 0) {
-                            db.drawSlots.updateOne({"date": date}, {$set: {result : []}})
-                        }*/
                         index = Math.ceil(Math.random() * (result[0].users.length))-1;
                         lucky_winner = result[0].users[index];
-                        if(pre_winners.indexOf(lucky_winner.contactNumber) < 0) {
+                        //console.log(typeof(lucky_winner.ticket), type_array[winners.length]);
+                        if(pre_winners.indexOf(lucky_winner.contactNumber) < 0 && typeof(lucky_winner.ticket) == type_array[winners.length]) {
                             pre_winners.push(lucky_winner.contactNumber);
                             winners.push(lucky_winner);
                         } else {
-                            //max_counter--;
                             continue;
                         }
                         drawSlot_winners.push(lucky_winner);
@@ -623,7 +629,87 @@ app.post("/generateResult", (req, res) => {
             })
         }
     });
-}); 
+});
+
+app.post("/couponCount", (req, res) => {
+    let date = req.body.date;
+    drawSlots.findOne({"date": new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6])}, (error, result) => {
+        if(error) {
+            res.status(500).json("Internal server error...Please try again...");
+        } else if(result) {
+            res.send({"couponCount": result.users.length});
+        } else {
+            res.send({"msg": "DrawSlot not found"});
+        }
+    });
+});
+
+app.post("/generateBumperPrize", (req, res) => {
+    let date = req.body.date;
+    drawSlots.find({$and:[
+            {"date": {$gte: new Date(date[0], date[1] - 1, date[2], 0, 0, 0, 0)}},
+            {"date": {$lt: new Date(date[0], date[1] - 1, date[2] + 1, 0, 0, 0, 0)}}
+        ]}).toArray((error, result) => {
+            if(error) {
+                res.status(500).json("Internal server error...Please try again...");
+            } else if(result) {
+                drawSlots.mapReduce(mapContactNumber, reduce1, {out :{inline: 1}}).then((m) => {
+                    pre_winners = m.length > 0 ? m[0].value.split(",") : []
+                    console.log(pre_winners);
+                    bumper_winner = [];
+                    winners = [];
+                    
+                    console.log("in 111")
+                    while(winners.length < 1) {
+                        index = Math.ceil(Math.random() * (result[0].users.length))-1;
+                        lucky_winner = result[0].users[index];
+                        if(pre_winners.indexOf(lucky_winner.contactNumber) < 0) {
+                            pre_winners.push(lucky_winner.contactNumber);
+                            winners.push(lucky_winner);
+                        } else {
+                            continue;
+                        }
+                        bumper_winner.push(lucky_winner);
+                    }   
+                    console.log("in 112222221", bumper_winner, new Date(date[0], date[1] - 1, date[2], 13, 0, 0, 0));
+                    let tempCounter = 0;
+                    final_result = []
+                    bumper_winner.forEach(d_w => {
+                            final_result.push({contactNumber: d_w.contactNumber, prize: "bumper", ticket: d_w.ticket})
+                            //request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=' + '8153922317' + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + d_w.ticket + ' has won ' + temp_draws[tempCounter].prize + ' prize.', { json: true });
+                            //request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=+' + d_w.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + d_w.ticket + ' has won ' + temp_draws[tempCounter].prize + ' prize.', { json: true });
+                            if(bumper_winner.length == ++tempCounter) {
+                                drawSlots.updateOne({"date": result[0].date}, {$set: {bumper_result : final_result}}, (err1, res1) => {});
+                                console.log("sending final_result", bumper_winner.length, tempCounter);
+                                res.send({"results" : final_result})
+                            }
+                    });
+                }).catch((err2) => {
+                    console.log(err2);
+                    res.status(500).json({ err: "internal server error please try again later." });
+                });
+            } else {
+                res.send({"msg": "Result not found"});
+            }
+            console.log(result.length);
+        });
+});
+
+
+ordinal_suffix_of = function (i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return i + "st";
+    }
+    if (j == 2 && k != 12) {
+        return i + "nd";
+    }
+    if (j == 3 && k != 13) {
+        return i + "rd";
+    }
+    return i + "th";
+}
 
 app.post("/sendSMS", (req, res) => {
     let date = req.body.date;
@@ -631,10 +717,12 @@ app.post("/sendSMS", (req, res) => {
         if(err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else {
-            for(let re=0; re < result.result.length; re++) {
-                request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=' + '8153922317' + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + result.result[re].ticket + ' has won ' + result.result[re].prize + ' prize.', { json: true });
+            if(result) {
+                for(let re=0; re < result.result.length; re++) {
+                    request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=' + result.result[re].contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + result.result[re].ticket + ' has won ' + ordinal_suffix_of(result.result[re].prize) + ' prize in the ' +  date + ' slot.', { json: true });
+                }
+                res.status(200).json({ msg: "Msg Sent !!! " });
             }
-            res.status(200).json({ msg: "Msg Sent !!! " });
         }
     });
 })
@@ -653,22 +741,6 @@ app.post("/winnerlist", (req, res) => {
         }
     });
 });
-
-/*app.post("/generateResult", (req, res) => {
-    drawSlots.find({date: new Date("2018-11-16T15:00:00Z")}).
-    toArray((error, result) => {
-        if(error) {
-
-        } else {
-            slotUsers = result[0].users;
-            p = {}
-            slotUsers.forEach((k) => p[k["contactNumber"]] ? p[k["contactNumber"]].push(k["ticket"]) : p[k["contactNumber"]] = [k["ticket"]]);
-            console.log(p);
-            Math.ceil(Math.random() * Object.keys(p).length)
-        }
-    });
-})*/
-
 
 app.post("/generateTicket", (req, res) => {
     users.findOne(
@@ -770,7 +842,7 @@ app.post("/registerAndGenerateTicket", (req, res) => {
                             users.updateOne({"contactNumber": user.contactNumber}, 
                             {$push: 
                                 { ticketMapping: 
-                                    { ticketNo: dbRes.value.coupon, 
+                                    { ticketNo: "JJ-" + dbRes.value.coupon, 
                                         assignDate: date } 
                                 }
                             },
@@ -779,8 +851,8 @@ app.post("/registerAndGenerateTicket", (req, res) => {
                                     res.status(500).json({ err: "internal server error please try again later." });
                                 } else {
                                     drawSlots.updateOne({ date: date },
-                                    { $push: { users: { contactNumber: user.contactNumber, ticket: dbRes.value.coupon } } })
-                                    res.send({"contactNumber": user.contactNumber, "coupon": dbRes.value.coupon, "drawTime": date});
+                                    { $push: { users: { contactNumber: user.contactNumber, ticket: "JJ-" + dbRes.value.coupon } } })
+                                    res.send({"contactNumber": user.contactNumber, "coupon": "JJ-" + dbRes.value.coupon, "drawTime": date});
                                 }
                             });
                         });
@@ -800,7 +872,7 @@ app.post("/registerAndGenerateTicket", (req, res) => {
                                     users.updateOne({"contactNumber": req.body.contactNumber}, 
                                     {$push: 
                                         { ticketMapping: 
-                                            { ticketNo: dbRes.value.coupon, 
+                                            { ticketNo: "JJ-" + dbRes.value.coupon, 
                                                 assignDate: date } 
                                         }
                                     },
@@ -809,8 +881,8 @@ app.post("/registerAndGenerateTicket", (req, res) => {
                                             res.status(500).json({ err: "internal server error please try again later." });
                                         } else {
                                             drawSlots.updateOne({ date: date },
-                                        { $push: { users: { contactNumber: req.body.contactNumber, ticket: dbRes.value.coupon } } })
-                                            res.send({"contactNumber": req.body.contactNumber, "coupon": dbRes.value.coupon, "drawTime": date});
+                                        { $push: { users: { contactNumber: req.body.contactNumber, ticket: "JJ-" + dbRes.value.coupon } } })
+                                            res.send({"contactNumber": req.body.contactNumber, "coupon": "JJ-" + dbRes.value.coupon, "drawTime": date});
                                         }
                                     });
                                 });
@@ -903,10 +975,14 @@ app.post("/sos", (req, res) => {
 
 
 mapContactNumber = function() {
-    if(this.result.length > 0)
+    if(this.result.length > 0) {
         this.result.map((k) => {
             emit("contactNumber", k.contactNumber)    
-        })
+        });
+    }
+    if(this.bumper_result && this.bumper_result.length > 0) {
+        emit("contactNumber", this.bumper_result[0].contactNumber)
+    }
 }
 
 reduce1 = function(key, values) {
