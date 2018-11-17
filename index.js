@@ -19,12 +19,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 /* Production URL */
-const port = 60371;
-const endPoint = 'http://luckydrawapi.dadabhagwan.org';
+// const port = 60371;
+// const endPoint = 'http://luckydrawapi.dadabhagwan.org';
 
 /* Local URL */
-// const port = 3000;
-// const endPoint = 'http://192.168.43.23:'+port;
+const port = 3000;
+const endPoint = 'http://192.168.43.23:'+port;
 
 var path = "./questions/";
 fs.readdir(path, function (err, items) {
@@ -584,17 +584,19 @@ app.post("/generateResult", (req, res) => {
                     let string_count = draw.count - num_count;
                     let type_array = [];
                     for(let tc= 0; tc < num_count; tc++) {
-                        type_array.push("number");
+                        type_array.push("no");
                     }
                     for(let tc= 0; tc < string_count; tc++) {
-                        type_array.push("string");
+                        type_array.push("yes");
                     }
                     console.log(type_array, new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6]));
                     while(winners.length < draw.count) {
                         index = Math.ceil(Math.random() * (result[0].users.length))-1;
                         lucky_winner = result[0].users[index];
                         //console.log(typeof(lucky_winner.ticket), type_array[winners.length]);
-                        if(pre_winners.indexOf(lucky_winner.contactNumber) < 0 && typeof(lucky_winner.ticket) == type_array[winners.length]) {
+                        if(pre_winners.indexOf(lucky_winner.contactNumber) < 0 && 
+                        ((type_array[winners.length] == "no" && !lucky_winner.is_jj)
+                        || (type_array[winners.length] == "yes" && lucky_winner.is_jj && lucky_winner.is_jj == "yes"))) {
                             pre_winners.push(lucky_winner.contactNumber);
                             winners.push(lucky_winner);
                         } else {
@@ -842,7 +844,7 @@ app.post("/registerAndGenerateTicket", (req, res) => {
                             users.updateOne({"contactNumber": user.contactNumber}, 
                             {$push: 
                                 { ticketMapping: 
-                                    { ticketNo: "JJ-" + dbRes.value.coupon, 
+                                    { ticketNo: dbRes.value.coupon, 
                                         assignDate: date } 
                                 }
                             },
@@ -851,8 +853,8 @@ app.post("/registerAndGenerateTicket", (req, res) => {
                                     res.status(500).json({ err: "internal server error please try again later." });
                                 } else {
                                     drawSlots.updateOne({ date: date },
-                                    { $push: { users: { contactNumber: user.contactNumber, ticket: "JJ-" + dbRes.value.coupon } } })
-                                    res.send({"contactNumber": user.contactNumber, "coupon": "JJ-" + dbRes.value.coupon, "drawTime": date});
+                                    { $push: { users: { contactNumber: user.contactNumber, ticket: dbRes.value.coupon, is_jj: "yes" } } })
+                                    res.send({"contactNumber": user.contactNumber, "coupon": dbRes.value.coupon, "drawTime": date});
                                 }
                             });
                         });
@@ -872,7 +874,7 @@ app.post("/registerAndGenerateTicket", (req, res) => {
                                     users.updateOne({"contactNumber": req.body.contactNumber}, 
                                     {$push: 
                                         { ticketMapping: 
-                                            { ticketNo: "JJ-" + dbRes.value.coupon, 
+                                            { ticketNo: dbRes.value.coupon, 
                                                 assignDate: date } 
                                         }
                                     },
@@ -881,8 +883,8 @@ app.post("/registerAndGenerateTicket", (req, res) => {
                                             res.status(500).json({ err: "internal server error please try again later." });
                                         } else {
                                             drawSlots.updateOne({ date: date },
-                                        { $push: { users: { contactNumber: req.body.contactNumber, ticket: "JJ-" + dbRes.value.coupon } } })
-                                            res.send({"contactNumber": req.body.contactNumber, "coupon": "JJ-" + dbRes.value.coupon, "drawTime": date});
+                                        { $push: { users: { contactNumber: req.body.contactNumber, ticket: dbRes.value.coupon, is_jj: "yes" } } })
+                                            res.send({"contactNumber": req.body.contactNumber, "coupon": dbRes.value.coupon, "drawTime": date});
                                         }
                                     });
                                 });
