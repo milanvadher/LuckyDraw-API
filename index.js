@@ -19,12 +19,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 /* Production URL */
-// const port = 60371;
-// const endPoint = 'http://luckydrawapi.dadabhagwan.org';
+const port = 60371;
+const endPoint = 'http://luckydrawapi.dadabhagwan.org';
 
 /* Local URL */
-const port = 3000;
-const endPoint = 'http://192.168.43.23:'+port;
+// const port = 3000;
+// const endPoint = 'http://192.168.43.23:'+port;
+
+// const port = 3000;
+// const endPoint = 'http://localhost:'+port;
 
 var path = "./questions/";
 fs.readdir(path, function (err, items) {
@@ -660,11 +663,14 @@ app.post("/generateBumperPrize", (req, res) => {
                     console.log(pre_winners);
                     bumper_winner = [];
                     winners = [];
-                    
+                    com_res = {
+                        users: result[0].users.concat(result[1].users).concat(result[1].users)
+
+                    }
                     console.log("in 111")
                     while(winners.length < 1) {
-                        index = Math.ceil(Math.random() * (result[0].users.length))-1;
-                        lucky_winner = result[0].users[index];
+                        index = Math.ceil(Math.random() * (com_res.users.length))-1;
+                        lucky_winner = com_res.users[index];
                         if(pre_winners.indexOf(lucky_winner.contactNumber) < 0) {
                             pre_winners.push(lucky_winner.contactNumber);
                             winners.push(lucky_winner);
@@ -737,7 +743,7 @@ app.post("/winnerlist", (req, res) => {
         } else if(result) {
             let draw_results = [];
             result.forEach((r) => {
-                draw_results.push({"date": r.date, "winner": r.result});
+                draw_results.push({"date": r.date, "winner": r.result, "bumper_result": r.bumper_result});
             });
             res.status(200).json({"result": draw_results});
         }
