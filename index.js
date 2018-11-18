@@ -727,7 +727,7 @@ app.post("/sendSMS", (req, res) => {
         } else {
             if(result) {
                 for(let re=0; re < result.result.length; re++) {
-                    request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=' + result.result[re].contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + result.result[re].ticket + ' has won ' + ordinal_suffix_of(result.result[re].prize) + ' prize in the ' +  date + ' slot.', { json: true });
+                    request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=' + result.result[re].contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Welcome to JJ-111. Your ticket ' + result.result[re].ticket + ' has won ' + ordinal_suffix_of(result.result[re].prize) + ' prize in the ' +  date + ' slot. Please collect your prize from Lucky draw counter.', { json: true });
                 }
                 res.status(200).json({ msg: "Msg Sent !!! " });
             }
