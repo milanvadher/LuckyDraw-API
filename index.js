@@ -583,7 +583,7 @@ app.post("/generateResult", (req, res) => {
                     winners = [];
                     
                     console.log("in 111")
-                    let num_count = Math.ceil(0.4 * draw.count);
+                    let num_count = Math.floor(0.4 * draw.count);
                     let string_count = draw.count - num_count;
                     let type_array = [];
                     for(let tc= 0; tc < num_count; tc++) {
