@@ -751,6 +751,7 @@ app.post("/winnerlist", (req, res) => {
             // });
             result.forEach((r) => {
                 r.result.forEach((data) => {
+                    data.actualContactNumber = data.contactNumber;
                     data.contactNumber = data.contactNumber.substring(0,2) + '******' + data.contactNumber.substring(8,10);
                 });
                 draw_results.push({"date": r.date, "winner": r.result, "bumper_result": r.bumper_result});
