@@ -741,8 +741,18 @@ app.post("/winnerlist", (req, res) => {
         if(err) {
             res.status(500).json({ err: "internal server error please try again later." });
         } else if(result) {
+            let users = [];
             let draw_results = [];
+            // result.forEach((d) => {
+            //     users.push({
+            //         "date": d.date,
+            //         "winner": d.winner
+            //     })
+            // });
             result.forEach((r) => {
+                r.result.forEach((data) => {
+                    data.contactNumber = data.contactNumber.substring(0,2) + '******' + data.contactNumber.substring(8,10);
+                });
                 draw_results.push({"date": r.date, "winner": r.result, "bumper_result": r.bumper_result});
             });
             res.status(200).json({"result": draw_results});
