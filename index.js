@@ -671,7 +671,7 @@ app.post("/generateBumperPrize", (req, res) => {
                     while(winners.length < 1) {
                         index = Math.ceil(Math.random() * (com_res.users.length))-1;
                         lucky_winner = com_res.users[index];
-                        if(pre_winners.indexOf(lucky_winner.contactNumber) < 0) {
+                        if(pre_winners.indexOf(lucky_winner.contactNumber) < 0 && lucky_winner.is_jj == "yes") {
                             pre_winners.push(lucky_winner.contactNumber);
                             winners.push(lucky_winner);
                         } else {
