@@ -704,6 +704,60 @@ app.post("/generateBumperPrize", (req, res) => {
 });
 
 
+app.post("/generatePrize", (req, res) => {
+    let date = req.body.date;
+    drawSlots.find({"date": new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6])}).toArray((error, result) => {
+            if(error) {
+                res.status(500).json("Internal server error...Please try again...");
+            } else if(result) {
+                console.log(result[0].users)
+                drawSlots.mapReduce(mapContactNumber, reduce1, {out :{inline: 1}}).then((m) => {
+                    pre_winners = m.length > 0 ? m[0].value.split(",") : []
+                    console.log(new Date(date[0], date[1] - 1, date[2], date[3] + 7, date[4] - 30, date[5], date[6]));
+                    bumper_winner = [];
+                    winners = [];
+                    com_res = {
+                        users: result[0].users
+
+                    }
+                    console.log("in 111")
+                    while(winners.length < 1) {
+                        index = Math.ceil(Math.random() * (com_res.users.length))-1;
+                        lucky_winner = com_res.users[index];
+                        if(pre_winners.indexOf(lucky_winner.contactNumber) < 0 && lucky_winner.is_jj == "yes") {
+                            // if(pre_winners.indexOf(lucky_winner.contactNumber) < 0 && lucky_winner.is_jj == null) {
+                            pre_winners.push(lucky_winner.contactNumber);
+                            winners.push(lucky_winner);
+                        } else {
+                            continue;
+                        }
+                        bumper_winner.push(lucky_winner);
+                    }   
+                    console.log("in 112222221", pre_winners, new Date(date[0], date[1] - 1, date[2], 13, 0, 0, 0));
+                    let tempCounter = 0;
+                    final_result = []
+                    bumper_winner.forEach(d_w => {
+                            final_result.push({contactNumber: d_w.contactNumber, prize: "Consolation", ticket: d_w.ticket})
+                            //request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=' + '8153922317' + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + d_w.ticket + ' has won ' + temp_draws[tempCounter].prize + ' prize.', { json: true });
+                            //request('http://api.msg91.com/api/sendhttp.php?country=91&sender=LUCKYD&route=4&mobiles=+' + d_w.contactNumber + '&authkey=192315AnTq0Se1Q5a54abb2&message=JSCA! Your ticket ' + d_w.ticket + ' has won ' + temp_draws[tempCounter].prize + ' prize.', { json: true });
+                            if(bumper_winner.length == ++tempCounter) {
+                                // drawSlots.updateOne({"date": result[0].date}, {$push: {result : final_result}}, (err1, res1) => {});
+                                console.log("sending final_result", bumper_winner.length, tempCounter);
+                                res.send({"results" : final_result})
+                            }
+                    });
+                }).catch((err2) => {
+                    console.log(err2);
+                    res.status(500).json({ err: "internal server error please try again later." });
+                });
+            } else {
+                res.send({"msg": "Result not found"});
+            }
+            console.log(result.length);
+        });
+});
+
+
 ordinal_suffix_of = function (i) {
     var j = i % 10,
         k = i % 100;
